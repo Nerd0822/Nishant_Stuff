@@ -1,0 +1,86 @@
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: sans-serif;
+}
+body{
+	width: 100%;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: linear-gradient(rgba(0,0,0,0.5),#000000);
+	background-size: cover;
+	background-position: center;
+}
+.navbar{
+    background-color: #333;
+    height: 50px;
+    overflow: hidden;
+    width: 85%;
+    margin-bottom: auto;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+}
+.logo{
+    width: 200px;
+    cursor: pointer;
+}
+.navbar ul li{
+    list-style: none;
+    display:inline-block;
+    margin: 0 10px;
+    position: relative;
+}
+.navbar ul li a{
+    float: left;
+    font-size: 15px;
+    color: #fff;
+    text-transform: uppercase;
+    text-decoration: none; 
+}
+.navbar ul li::after{
+    content: '';
+    height: 3px;
+    width: 0;
+    background: red;
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    transition: 0.3s;
+}
+.navbar ul li:hover::after{
+    width: 100%;
+}
+.navbar ul li a.active{
+    background-color: white;
+    color: #000;
+}
+.bannertext{
+	top: 10%;
+	left: 5%;
+    position: absolute;
+    text-align: center;
+    color: #fff;
+	background: transparent;
+	backdrop-filter:blur(2px);
+}
+.bannertext h1{
+	margin-bottom: 5px;
+	font-size: 50px;
+    position: relative;
+	font-weight: 900;
+	text-decoration: underline;
+	text-decoration-color: red;
+}
+.bannertext p{
+	font-weight: 500;
+    margin-top: 9px;
+    font-size: 20px;
+    padding-left: 40px;
+    padding-right: 40px;
+}right: 40px;
+}

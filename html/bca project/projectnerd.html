@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<section id="banner">
+	<div class="bannertext">
+	<h1>VIRTUAL LIBRARY</h1>
+		
+		<p>WELCOME TO VIRTUAL LIBRARY<br> WHERE WE FULFILL EDUCATIONAL NEEDS OF ALL STUDENTS.<br><br>PLEASE PRESS THE BUTTON BELOW TO PROCEED</p>
+	</div>
+</section>
+	<div id="bnav">
+		<img src="librarylogo.png" class="logo">
+	<nav>
+	<ul>
+	<li><a href="chooselogin.html">LOGIN</a></li>
+<!--	<li><a href="counter.html">BOOKS</a></li>-->
+	<li><a href="report an issue.html">REPORT AN ISSUE</a></li>
+	<li><a href="contact.html">CONTACT US</a></li>
+	</ul>
+	</nav>
+	</div>
+	<div id="btn">
+		<img src="enter.png" id="menu">
+	</div>
+	<script>
+	var btn = document.getElementById("btn")
+	var bnav = document.getElementById("bnav")
+	var menu = document.getElementById("menu")
+	
+	btn.onclick = function(){
+		if(bnav.style.bottom == "-250px"){
+			bnav.style.bottom = "0";
+		}
+		else{
+			bnav.style.bottom = "-250px";
+		}
+	}
+	</script>
+</body>
+</html>

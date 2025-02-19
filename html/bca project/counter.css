@@ -1,0 +1,144 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+	background: linear-gradient(rgba(0,0,0,0.5),#fff),url("wingardium.jpg");
+	background-position: center;
+	background-size: cover;
+	width: 100%;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items:center;
+    overflow: hidden;
+}
+
+.navbar{
+    background-color: #333;
+    height: 50px;
+    width: 85%;
+    margin-bottom: auto;
+    padding: 10px 0;
+    display: flex;
+    top: 0;
+    left: 0;
+    align-items: center;
+    justify-content:space-between;
+    position: absolute;
+}
+.logo{
+    width: 200px;
+    cursor: pointer;
+}
+.navbar ul li{
+    list-style: none;
+    display:inline-block;
+    margin: 0 10px;
+    position: relative;
+    color: #fff;
+    visibility: visible;
+}
+.navbar ul li a{
+/*    float: left;*/
+    font-size: 15px;
+    color: #fff;
+    text-transform: uppercase;
+    text-decoration: none; 
+    visibility: visible;
+    position: relative;
+}    
+
+.navbar ul li::after{
+    content: '';
+    height: 3px;
+    width: 0;
+    background: red;
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    transition: 0.3s;
+}
+.navbar ul li:hover::after{
+    width: 100%;
+}
+.navbar ul li a.active{
+    background-color: white;
+    color: #000;
+}
+.navbar ul li:hover::after{
+    width: 100%;
+}
+.container{
+    display: flex;
+/*    position: relative;*/
+    
+}
+.card{
+    height: 261px;
+    width: 250px;
+    margin: 50px;
+    box-shadow: 5px 5px 20px black;
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+}
+img{
+    height: 250px;
+    width: 250px;
+    
+}
+.intro{
+    height: 70px;
+    width: 250px;
+    padding: 6px;
+    box-sizing: border-box;
+    position: relative;
+    background: rgb(27, 27, 27, 0.5);
+    color: #fff;
+    bottom: 70px;
+    transition: 0.5s;
+}
+h1{
+    margin: 10px;
+    font-size: 30px;
+    color: #fff;
+}
+p{
+    font-size: 15px;
+    margin:20px;
+    visibility: hidden;
+    opacity: 0;
+    color: #fff;
+}
+a{
+    font-size: 20px;
+    visibility: hidden;
+    opacity: 0;
+    color: red;
+}
+span{
+    font-weight:bold;
+    
+}
+.card:hover{
+    cursor: pointer;
+    
+}
+.card:hover .intro{
+    height: 220px;
+    bottom: 240px;
+    background: #000;
+}
+.card:hover p{
+    opacity: 1;
+    visibility: visible;
+    
+}
+.card:hover img{
+    transform: scale(1.1) rotate(-3deg);
+}
+.card:hover a{
+    opacity: 1;
+    visibility: visible;
+}
