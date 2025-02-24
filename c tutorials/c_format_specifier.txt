@@ -1,0 +1,4 @@
+%d = int
+%s = string
+%c = char
+%f = float
