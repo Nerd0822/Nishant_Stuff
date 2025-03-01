@@ -38,7 +38,7 @@ from IPython.core.ultratb import AutoFormattedTB
 from logging import error, debug
 
 
-class BackgroundJobManager(object):
+class BackgroundJobManager:
     """Class to manage a pool of backgrounded threaded jobs.
 
     Below, we assume that 'jobs' is a BackgroundJobManager instance.
@@ -404,9 +404,9 @@ class BackgroundJobBase(threading.Thread):
         try:
             make_tb = get_ipython().InteractiveTB.text
         except:
-            make_tb = AutoFormattedTB(mode = 'Context',
-                                      color_scheme='NoColor',
-                                      tb_offset = 1).text
+            make_tb = AutoFormattedTB(
+                mode="Context", color_scheme="nocolor", tb_offset=1
+            ).text
         # Note that the actual API for text() requires the three args to be
         # passed in, so we wrap it in a simple lambda.
         self._make_tb = lambda : make_tb(None, None, None)

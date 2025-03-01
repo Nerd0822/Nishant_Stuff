@@ -116,6 +116,12 @@ addflag('confirm-exit', 'TerminalInteractiveShell.confirm_exit',
     you can force a direct exit without any confirmation.""",
     "Don't prompt the user when exiting."
 )
+addflag(
+    "tip",
+    "TerminalInteractiveShell.enable_tip",
+    """Shows a tip when IPython starts.""",
+    "Don't show tip when IPython starts.",
+)
 addflag('term-title', 'TerminalInteractiveShell.term_title',
     "Enable auto setting the terminal title.",
     "Disable auto setting the terminal title."
@@ -123,12 +129,14 @@ addflag('term-title', 'TerminalInteractiveShell.term_title',
 classic_config = Config()
 classic_config.InteractiveShell.cache_size = 0
 classic_config.PlainTextFormatter.pprint = False
-classic_config.TerminalInteractiveShell.prompts_class='IPython.terminal.prompts.ClassicPrompts'
-classic_config.InteractiveShell.separate_in = ''
-classic_config.InteractiveShell.separate_out = ''
-classic_config.InteractiveShell.separate_out2 = ''
-classic_config.InteractiveShell.colors = 'NoColor'
-classic_config.InteractiveShell.xmode = 'Plain'
+classic_config.TerminalInteractiveShell.prompts_class = (
+    "IPython.terminal.prompts.ClassicPrompts"
+)
+classic_config.InteractiveShell.separate_in = ""
+classic_config.InteractiveShell.separate_out = ""
+classic_config.InteractiveShell.separate_out2 = ""
+classic_config.InteractiveShell.colors = "nocolor"
+classic_config.InteractiveShell.xmode = "Plain"
 
 frontend_flags['classic']=(
     classic_config,

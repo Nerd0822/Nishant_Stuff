@@ -149,7 +149,7 @@ LocalFree = ctypes.windll.kernel32.LocalFree
 LocalFree.argtypes = [HLOCAL]
 LocalFree.restype = HLOCAL
 
-class AvoidUNCPath(object):
+class AvoidUNCPath:
     """A context manager to protect command execution from UNC paths.
 
     In the Win32 API, commands can't be invoked with the cwd being a UNC path.
@@ -169,7 +169,8 @@ class AvoidUNCPath(object):
                 cmd = '"pushd %s &&"%s' % (path, cmd)
             os.system(cmd)
     """
-    def __enter__(self):
+
+    def __enter__(self) -> None:
         self.path = os.getcwd()
         self.is_unc_path = self.path.startswith(r"\\")
         if self.is_unc_path:
@@ -181,12 +182,12 @@ class AvoidUNCPath(object):
             # directory
             return None
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
         if self.is_unc_path:
             os.chdir(self.path)
 
 
-class Win32ShellCommandController(object):
+class Win32ShellCommandController:
     """Runs a shell command in a 'with' context.
 
     This implementation is Win32-specific.
@@ -543,7 +544,7 @@ class Win32ShellCommandController(object):
             self.piProcInfo = None
 
 
-def system(cmd):
+def system(cmd: str) -> None:
     """Win32 version of os.system() that works with network shares.
 
     Note that this implementation returns None, as meant for use in IPython.

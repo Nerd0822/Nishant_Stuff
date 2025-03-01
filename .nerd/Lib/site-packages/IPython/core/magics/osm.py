@@ -74,7 +74,7 @@ class OSMagics(Magics):
         return False
 
 
-    
+
     def _isexec_WIN(self, file):
         """
         Test for executable file on non POSIX system
@@ -320,9 +320,9 @@ class OSMagics(Magics):
         Options:
 
         -q               Be quiet. Do not print the working directory after the
-                         cd command is executed. By default IPython's cd
-                         command does print this directory, since the default
-                         prompts do not display path information.
+                          cd command is executed. By default IPython's cd
+                          command does print this directory, since the default
+                          prompts do not display path information.
 
         .. note::
            Note that ``!cd`` doesn't work for this purpose because the shell
@@ -425,9 +425,9 @@ class OSMagics(Magics):
 
             if oldcwd != cwd:
                 dhist.append(cwd)
-                self.shell.db['dhist'] = compress_dhist(dhist)[-100:]
-        if not 'q' in opts and not self.cd_force_quiet and self.shell.user_ns['_dh']:
-            print(self.shell.user_ns['_dh'][-1])
+                self.shell.db["dhist"] = compress_dhist(dhist)[-100:]
+        if "q" not in opts and not self.cd_force_quiet and self.shell.user_ns["_dh"]:
+            print(self.shell.user_ns["_dh"][-1])
 
     @line_magic
     def env(self, parameter_s=''):
