@@ -1,8 +1,8 @@
-file=open("nthdata.txt","r")
+__version__ = (0, 8, 1)
+USER_AGENT = (
+    "Wikipedia-API/"
+    + ".".join(str(s) for s in __version__)
+    + "; https://github.com/martin-majlis/Wikipedia-API/"
+)
 
-a=file.read()
-b=file.readline()
-c=file.readlines()
-print(a)
-print(b)
-print(c)
+print(USER_AGENT)
