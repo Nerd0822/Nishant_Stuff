@@ -1,6 +1,6 @@
 import os
 import google.generativeai as genai
-import module1
+
 
 genai.configure(api_key="AIzaSyA8lxY26RFM-ArWAHq4cJ5ESjTjfjV8-yM")
 
@@ -20,22 +20,12 @@ model = genai.GenerativeModel(
 
 def generate(text):
     response = model.generate_content([
-    "you are a ai virtual guide chatbot.so reply accordingly",
+    "you are a ai virtual guide chatbot named wanderAI.so reply accordingly with least words if possible but explaining in an detailed manner and in an friendly manner",
     f"input: {text}",
     "output: ", 
     ])
 
     return response.text
 
-while True:
-    user = module1.record_and_convert()
-    
-    output = generate(user)
-    print(output)
-    module1.speak(output)
-    
-    if any (word in user.lower() for word in ["exit","bye","quit","goodbye"] ):
-      
-      module1.speak("thank you for using wanderAI, have a great day.")
-      break
+
     

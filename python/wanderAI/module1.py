@@ -1,44 +1,45 @@
-#importing libraries
 import speech_recognition as sr
 import pyttsx3
 
-voice = 1 # 0 male and 1 female
+voice = 1  # 0 male and 1 female
 speed = 150
 
-
-#recording voice and the convert it into text
-def record_and_convert(): #method to record and convert the speech to text
-    speech_recog=sr.Recognizer()
-    with sr.Microphone() as mic:
-        print("Speak now....")
-        speech_recog.adjust_for_ambient_noise(mic) # to reduce noises in the voice
-        speech = speech_recog.listen(mic,timeout=5,phrase_time_limit=30)
-        
+def record_and_convert():
+    """Records voice and converts it to text."""
+    speech_recog = sr.Recognizer()
+    
     try:
-        text = speech_recog.recognize_google(speech) #convert to text
-        print("you said: ",text)
+        with sr.Microphone() as mic:
+            print("Speak now....")
+            speech_recog.adjust_for_ambient_noise(mic)
+            speech = speech_recog.listen(mic, timeout=5, phrase_time_limit=30)
+        
+        text = speech_recog.recognize_google(speech)
+        
         return text
+
     except sr.UnknownValueError:
-        print("sorry can you repeat that again")
-        
+        print("Sorry, I couldn't understand. Please repeat.")
+        return "error: could not understand speech"
+    
     except sr.RequestError:
-        print("count not request results.")
-        
-    return "" # returning an empty string when any error occurs
-        
+        print("Network error. Please check your internet connection.")
+        return "error: network issue"
+
+    except OSError:
+        print("Microphone not accessible. Please check your device.")
+        return "error: microphone issue"
     
-    
-#method to speak
+    return ""
+
 def speak(txt):
-    engine = pyttsx3.init()
-    
-    #get the list of all available voices
-    voices = engine.getProperty("voices")
-    
-    #applying the voice property
-    engine.setProperty("voice",voices[voice].id)
-    engine.setProperty("rate",speed)
-    
-    engine.say(txt)
-    engine.runAndWait()
-    
+    """Speaks out the given text."""
+    try:
+        engine = pyttsx3.init()
+        voices = engine.getProperty("voices")
+        engine.setProperty("voice", voices[voice].id)
+        engine.setProperty("rate", speed)
+        engine.say(txt)
+        engine.runAndWait()
+    except Exception as e:
+        print("Speech synthesis error:", str(e))
