@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>WanderAI</title>
+</head>
+
+<body>
+
+    <video autoplay loop muted playsinline class="bgvideo">
+        <source src="bg-vedio.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <nav class="nav">
+        <div class="navright">
+            <h1>WanderAI</h1>
+            <p class="developer-text">Developed by Nishant Kagra</p>
+        </div>
+        
+    </nav>
+
+    <main>
+        <section class="note" id="home">
+            <h1>Welcome to WanderAI</h1>
+            <p>Your personal AI-powered travel guide is here to make exploring the world easier than ever! <br>
+                Discover new places, uncover hidden gems, and get instant travel insights—all at your fingertips.<br>
+                🌍 Plan. Explore. Experience. Let WanderAI guide your journey!
+            </p>
+        </section>
+
+        <div class="search-area">
+            <input type="text" id="searchbar" placeholder="Search destinations...">
+            <button type="button">GO</button>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer id="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h2>About Us</h2>
+                <p>WanderAI is an advanced AI-powered travel companion designed to help you navigate new destinations
+                    with ease.</p>
+            </div>
+
+            <div class="footer-section">
+                <h2>Customer Support</h2>
+                <p>Need help? Our support team is here to assist you with any issues or queries.</p>
+            </div>
+
+            <div class="footer-section">
+                <h2>Get the App</h2>
+                <p>Download WanderAI today and start your adventure with AI-powered guidance.</p>
+                <button class="download-btn">Download Now</button>
+            </div>
+        </div>
+
+        <p class="footer-bottom">© 2025 WanderAI. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+
+</body>
+
+</html>
+
+
+#to do:
+add functionality to the searchbar
+add something besides navright
+add google translate
+add mic or livechat option for chatbot

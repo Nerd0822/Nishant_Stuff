@@ -1,0 +1,248 @@
+/* Reset Defaults */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Background Styling */
+body {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Video Background */
+.bgvideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+}
+
+/* Navigation Bar */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    min-height: 90px;
+    padding: 10px 20px;
+    width: 100%;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+/* Navbar Title */
+.navright {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.navright h1 {
+    color: rgb(255, 0, 0);
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.372);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.navright h1:hover {
+    color: white;
+}
+
+/* Developer Text */
+.developer-text {
+    color: white;
+    font-size: 14px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+/* Main Content */
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 50px;
+    gap: 40px;
+    flex-grow: 1;
+    padding-bottom: 500px;
+}
+
+main h1 {
+    color: red;
+    font-size: 3rem;
+    font-weight: bolder;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+main p {
+    color: white;
+    font-size: 17px;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Welcome Section */
+.note {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+    width: 80%;
+    max-width: 800px;
+    padding: 40px;
+}
+
+/* Search Area Styling */
+.search-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+}
+
+/* Search Bar */
+#searchbar {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid red;
+    border-radius: 20px;
+    font-size: 16px;
+    color: white;
+    background: black;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+}
+
+#searchbar::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+#searchbar:focus {
+    border-color: white;
+}
+
+/* Search Button */
+.search-area button {
+    padding: 12px 20px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.search-area button:hover {
+    background: white;
+    color: red;
+}
+
+/* Footer Styling */
+footer {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 40px 20px;
+    text-align: center;
+    margin-top: 50px;
+    width: 100%;
+
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.footer-section {
+    max-width: 300px;
+}
+
+.footer-section h2 {
+    color: red;
+    font-size: 1.8rem;
+}
+
+.footer-section p {
+    color: white;
+    font-size: 16px;
+}
+
+.download-btn {
+    padding: 12px 20px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.download-btn:hover {
+    background: white;
+    color: red;
+}
+
+.footer-bottom {
+    color: white;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 0;
+    }
+
+    .navright h1 {
+        font-size: 2rem;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .note {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .search-area {
+        width: 90%;
+    }
+
+    #searchbar {
+        font-size: 14px;
+    }
+
+    .search-area button {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+}
