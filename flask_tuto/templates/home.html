@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+<h1>Task Manager</h1>
+<table>
+    <tr>
+        <th>Title</th>
+        <th>content</th>
+        <th>Date</th>
+        <th>ACTION</th>
+    </tr>
+    {% for task in todo %}
+    <tr>
+        <td>{{task.title}}</td>
+        <td>{{task.content}}</td>
+        <td>{{task.created_on}}</td>
+        <td><button><a href="/edit/{{ task.id }}/">Edit</a></button>
+            <br>
+            <form action="/delete/{{ task.id }}" method="post" style="display: inline;">
+                <button type="submit"> Delete </button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<form action="/new/" method="post">
+    <input type="text" name="title" id="title" placeholder="enter the title">
+    <br>
+    <input type="text" name="content" id="content" placeholder="task details">
+    <br>
+    <button type="submit">create</button>
+</form>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Register · Sunshine Club{% endblock %}
+
+{% block content %}
+<section class="card card--narrow">
+    <h1>Join the club! &#127880;</h1>
+    <p class="lead">Create your account — it only takes a moment.</p>
+
+    <form method="post" autocomplete="off" novalidate>
+        {% csrf_token %}
+
+        {% if registerform.non_field_errors %}
+            <ul class="errorlist nonfield-errors">
+                {% for error in registerform.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% for field in registerform %}
+            <div class="form-group">
+                {{ field.label_tag }} {{ field }}
+                {% if field.errors %}
+                    <ul class="errorlist field-errors">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+    </form>
+
+    <p class="subtitle">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+</section>
+{% endblock %}

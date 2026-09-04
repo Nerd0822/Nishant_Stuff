@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A friendly learning space for kids at the children's hospital.">
+    <title>{% block title %}Sunshine Club{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <!-- Decorative background shapes -->
+    <div class="bg-shapes" aria-hidden="true">
+        <span class="blob blob-1"></span>
+        <span class="blob blob-2"></span>
+        <span class="blob blob-3"></span>
+        <span class="sparkle s1">&#10022;</span>
+        <span class="sparkle s2">&#10022;</span>
+        <span class="sparkle s3">&#10022;</span>
+    </div>
+
+    <header class="site-header">
+        <a class="brand" href="{% url 'home' %}">
+            <span class="brand-icon" aria-hidden="true">&#9728;</span>
+            <span class="brand-name">Sunshine&nbsp;Club</span>
+        </a>
+        <nav class="site-nav">
+            {% if user.is_authenticated %}
+                <span class="nav-user">Hi, {{ user.username }}!</span>
+                <a class="btn btn-outline" href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a class="btn btn-ghost" href="{% url 'login' %}">Login</a>
+                <a class="btn btn-primary" href="{% url 'register' %}">Join Us</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="site-main">
+        {% if messages %}
+            <ul class="messages" role="status">
+                {% for message in messages %}
+                    <li class="message message--{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <p>Made with <span aria-hidden="true">&#10084;</span> for the amazing kids at the children's hospital.</p>
+    </footer>
+</body>
+</html>

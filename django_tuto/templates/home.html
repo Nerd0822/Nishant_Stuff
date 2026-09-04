@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Home · Sunshine Club{% endblock %}
+
+{% block content %}
+<section class="card">
+    <span class="hero-badge">Welcome</span>
+    {% if user.is_authenticated %}
+        <h1>Hello, {{ user.username }}! &#128075;</h1>
+        <p class="lead">You are signed in and ready to explore. We are so happy
+        to have you here with us today.</p>
+        <a class="btn btn-primary" href="{% url 'logout' %}">Logout</a>
+    {% else %}
+        <h1>Let there be code &#10024;</h1>
+        <p class="lead">Sign in to join the fun, or create a brand-new account
+        in just a few seconds.</p>
+        <a class="btn btn-ghost" href="{% url 'login' %}">Login</a>
+    {% endif %}
+</section>
+{% endblock %}
