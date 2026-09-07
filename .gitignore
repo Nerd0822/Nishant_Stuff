@@ -221,3 +221,7 @@ __marimo__/
 
 on_meds/
 ml_shit/
+
+
+*.csv
+dataset/
