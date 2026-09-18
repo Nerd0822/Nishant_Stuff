@@ -64,10 +64,8 @@ class Agent:
             stream=True,
         )
 
-    def start(self):
-        console.print("[bold magenta]YOU:[/bold magenta] ", end="")
-        user = input()
-
+    def start(self,user):
+        
         if user_wants_to_quit(user_input=user):
             return None
 
@@ -87,7 +85,9 @@ class Agent:
             f"[bold blue]{ART}[/bold blue]\n[dim](Type 'exit', 'bye', or 'see you' to quit)[/dim]\n"
         )
         while True:
-            response = self.start()
+            console.print("[bold magenta]YOU:[/bold magenta] ", end="")
+            user = input()
+            response = self.start(user)
             if response is None:
                 console.print("[bold yellow]👋 Have a good day![/bold yellow]\n")
                 break

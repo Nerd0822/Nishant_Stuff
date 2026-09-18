@@ -1,0 +1,161 @@
+/* ── Blue & Black Theme Overrides ── */
+:root {
+    --tw-blue-950: #020617;
+    --tw-blue-900: #0c1929;
+    --tw-blue-800: #0f2544;
+    --tw-blue-700: #1a3a6b;
+    --tw-blue-500: #3b82f6;
+    --tw-blue-400: #60a5fa;
+    --tw-blue-300: #93c5fd;
+    --tw-blue-glow: rgba(59, 130, 246, 0.35);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #020617;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Subtle animated background gradient */
+.bg-cosmic {
+    background: radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(99, 102, 241, 0.04) 0%, transparent 50%),
+                #020617;
+    position: relative;
+}
+
+/* ── Chat Layout (Kimi-style) ── */
+
+/* Top bar */
+.topbar {
+    position: relative;
+    z-index: 50;
+}
+
+/* Chat layout container: fills viewport, flex column */
+.chat-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Messages area: scrollable, takes remaining space */
+.messages-area {
+    flex: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+/* Input bar at the bottom */
+.input-bar {
+    position: relative;
+    z-index: 50;
+}
+
+/* ── Message Bubbles ── */
+
+.message-bubble {
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.35s ease-out forwards;
+}
+
+.message-avatar {
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: rgba(147, 197, 253, 0.5);
+    margin-bottom: 0.35rem;
+}
+
+.bubble {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+/* Bot bubble — right-aligned, blue tint */
+.bot-bubble {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    color: #bfdbfe;
+    border-radius: 20px 20px 4px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* User bubble — left-aligned, dark with blue accent */
+.user-bubble {
+    background: #0c1929;
+    border: 1px solid rgba(59, 130, 246, 0.12);
+    color: #e2e8f0;
+    border-radius: 20px 20px 20px 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Input Field ── */
+.chat-input {
+    background-color: rgba(2, 6, 23, 0.4);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    outline: none;
+    transition: box-shadow 0.2s ease;
+}
+
+.chat-input::placeholder {
+    color: rgba(147, 197, 253, 0.2);
+}
+
+.chat-input:focus {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25), 0 0 16px rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* ── Send Button ── */
+.btn-send {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    border-radius: 12px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.btn-send:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+.btn-send:active {
+    transform: scale(0.97);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #1a3a6b; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+/* ── Animations ── */
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive tweaks ── */
+@media (max-width: 640px) {
+    .messages-area { padding-left: 1rem; padding-right: 1rem; }
+    .input-bar { padding-left: 1rem; padding-right: 1rem; }
+}
