@@ -1,0 +1,10 @@
+Django>=6.0.0
+djangorestframework
+psycopg[binary]>=3.2
+django-htmx
+gunicorn
+celery
+redis
+requests
+python-dotenv
+ollama

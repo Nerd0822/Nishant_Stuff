@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'css/support.css' %}">
+{% endblock %}
+
+{% block hero %}
+  <section class="support-page">
+    <div class="support-hero" data-animate="fade-up">
+      <div class="support-icon-wrap">
+        <i class="fa-solid fa-headset"></i>
+      </div>
+      <h2>Need Help?</h2>
+      <p>Send us a message and we'll get back to you as soon as possible.</p>
+    </div>
+
+    <div class="support-form-card glass-panel" data-animate="fade-up" data-delay="100">
+      <form id="supportForm" onsubmit="return handleSupportSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="supportName">Your Name</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-user"></i>
+              <input type="text" id="supportName" placeholder="John Doe" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="supportEmail">Your Email</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-envelope"></i>
+              <input type="email" id="supportEmail" placeholder="john@example.com" required />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="supportSubject">Subject</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-tag"></i>
+            <input type="text" id="supportSubject" placeholder="What's this about?" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="supportMessage">Message</label>
+          <textarea id="supportMessage" placeholder="Describe your issue or feedback..." rows="5" required></textarea>
+          <span class="char-count"><span id="charCount">0</span> / 1000</span>
+        </div>
+
+        <button type="submit" class="btn-submit-support" id="supportSubmitBtn">
+          <i class="fa-solid fa-paper-plane"></i> Send Message
+        </button>
+      </form>
+    </div>
+
+    <div class="support-info-cards">
+      <div class="info-card glass-panel" data-animate="fade-up" data-delay="200">
+        <div class="info-icon-wrap">
+          <i class="fa-solid fa-bug"></i>
+        </div>
+        <h4>Report a Bug</h4>
+        <p>Found something broken? Let us know the details.</p>
+      </div>
+      <div class="info-card glass-panel" data-animate="fade-up" data-delay="280">
+        <div class="info-icon-wrap">
+          <i class="fa-solid fa-lightbulb"></i>
+        </div>
+        <h4>Suggest a Feature</h4>
+        <p>Have an idea to make Raahi better? We'd love to hear it.</p>
+      </div>
+      <div class="info-card glass-panel" data-animate="fade-up" data-delay="360">
+        <div class="info-icon-wrap">
+          <i class="fa-solid fa-circle-question"></i>
+        </div>
+        <h4>General Question</h4>
+        <p>Anything else on your mind? Ask away.</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    /* Character counter */
+    const msgArea = document.getElementById("supportMessage");
+    const charCount = document.getElementById("charCount");
+    if (msgArea && charCount) {
+      msgArea.addEventListener("input", () => {
+        charCount.textContent = msgArea.value.length;
+      });
+    }
+
+    function handleSupportSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById("supportSubmitBtn");
+      const form = document.getElementById("supportForm");
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+
+      fetch("/support/send/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: JSON.stringify({
+          name: document.getElementById("supportName").value.trim(),
+          email: document.getElementById("supportEmail").value.trim(),
+          subject: document.getElementById("supportSubject").value.trim(),
+          message: document.getElementById("supportMessage").value.trim()
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            showToast("Message Sent!", data.success || "We'll get back to you soon.", "success");
+            form.reset();
+            if (charCount) charCount.textContent = "0";
+          } else {
+            showToast("Failed", data.error || "Something went wrong.", "error");
+          }
+        })
+        .catch(() => {
+          showToast("Network Error", "Please check your connection and try again.", "error");
+        })
+        .finally(() => {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
+        });
+      return false;
+    }
+  </script>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block hero %}
+  <!-- Hero Section -->
+  <section class="hero-showcase">
+    <div class="hero-particles" id="heroParticles"></div>
+    <div class="hero-content-box" data-animate="fade-up">
+      <div class="hero-badge">
+        <i class="fa-solid fa-sparkles"></i>
+        <span>AI-Powered Travel</span>
+      </div>
+      <h2>Your Smart Travel Companion</h2>
+      <p>Raahi helps you explore destinations with AI-powered guidance, real-time information, and personalized recommendations.</p>
+      <div class="hero-action-deck">
+        <a href="{% url 'go_map' %}" class="btn-get-started">
+          Get Started <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <a href="#features" class="btn-learn-more">
+          <i class="fa-solid fa-circle-play"></i> See How It Works
+        </a>
+      </div>
+    </div>
+
+    <!-- Animated Stats Strip -->
+    <div class="hero-stats-strip" data-animate="fade-up" data-delay="200">
+      <div class="hero-stat">
+        <span class="hero-stat-number" data-count="10000">0</span>
+        <span class="hero-stat-label">Travelers Served</span>
+      </div>
+      <div class="hero-stat-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-number" data-count="500">0</span>
+        <span class="hero-stat-label">Destinations</span>
+      </div>
+      <div class="hero-stat-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-number" data-count="24">0</span>
+        <span class="hero-stat-label">AI Assistant Hours</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="workspace-container" id="features">
+    <header class="section-meta" data-animate="fade-up">
+      <h2>How Raahi Helps You Travel Smarter</h2>
+      <p class="subtitle">Our AI-powered assistant provides everything you need for a seamless travel experience.</p>
+    </header>
+
+    <div class="feature-card-grid">
+      <div class="feature-card" data-animate="fade-up" data-delay="0">
+        <div class="card-icon-wrapper">
+          <i class="fas fa-robot"></i>
+        </div>
+        <h3>AI Tour Guide</h3>
+        <p>Get personalized recommendations and answers to all your travel questions through our intelligent chatbot.</p>
+      </div>
+
+      <div class="feature-card" data-animate="fade-up" data-delay="80">
+        <div class="card-icon-wrapper">
+          <i class="fas fa-bus"></i>
+        </div>
+        <h3>Transport Info</h3>
+        <p>Access real-time bus schedules, routes, and booking information to plan your journey efficiently.</p>
+      </div>
+
+      <div class="feature-card" data-animate="fade-up" data-delay="160">
+        <div class="card-icon-wrapper">
+          <i class="fas fa-hotel"></i>
+        </div>
+        <h3>Accommodation</h3>
+        <p>Find and compare hotels, hostels, and homestays with detailed information and reviews.</p>
+      </div>
+
+      <div class="feature-card" data-animate="fade-up" data-delay="240">
+        <div class="card-icon-wrapper">
+          <i class="fas fa-cloud-sun"></i>
+        </div>
+        <h3>Weather Info</h3>
+        <p>Get real-time weather updates and forecasts to plan your travel days better.</p>
+      </div>
+
+      <div class="feature-card" data-animate="fade-up" data-delay="320">
+        <div class="card-icon-wrapper">
+          <i class="fas fa-map-marked-alt"></i>
+        </div>
+        <h3>Maps & Navigation</h3>
+        <p>Explore interactive maps, find routes, and navigate with ease wherever you go.</p>
+      </div>
+
+      <div class="feature-card" data-animate="fade-up" data-delay="400">
+        <div class="card-icon-wrapper">
+          <i class="fas fa-landmark"></i>
+        </div>
+        <h3>Historical Insights</h3>
+        <p>Discover the rich history and cultural significance of monuments and attractions.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section" data-animate="fade-scale">
+    <div class="cta-glow"></div>
+    <div class="cta-content">
+      <h2>Ready to explore?</h2>
+      <p>Start your journey with Raahi today and discover the world with AI by your side.</p>
+      <a href="{% url 'go_map' %}" class="btn-get-started">
+        <i class="fa-solid fa-compass"></i> Launch Explorer
+      </a>
+    </div>
+  </section>
+
+  <script>
+    /* Animated stat counter */
+    function animateCounters() {
+      document.querySelectorAll('[data-count]').forEach(el => {
+        const target = parseInt(el.dataset.count);
+        const duration = 2000;
+        const start = performance.now();
+
+        function update(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.floor(target * eased).toLocaleString();
+          if (progress < 1) requestAnimationFrame(update);
+          else el.textContent = target.toLocaleString() + '+';
+        }
+        requestAnimationFrame(update);
+      });
+    }
+
+    /* Hero floating particles */
+    function createParticles() {
+      const container = document.getElementById('heroParticles');
+      if (!container) return;
+      for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top = Math.random() * 100 + '%';
+        p.style.animationDelay = Math.random() * 8 + 's';
+        p.style.animationDuration = (6 + Math.random() * 10) + 's';
+        p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+        container.appendChild(p);
+      }
+    }
+
+    /* Trigger counters when stats strip is visible */
+    const statsStrip = document.querySelector('.hero-stats-strip');
+    if (statsStrip) {
+      const statsObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          animateCounters();
+          statsObserver.disconnect();
+        }
+      }, { threshold: 0.5 });
+      statsObserver.observe(statsStrip);
+    }
+
+    createParticles();
+  </script>
+{% endblock %}

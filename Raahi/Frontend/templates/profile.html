@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block hero %}
+<div class="profile-page">
+  <div class="profile-hero">
+    <div class="profile-avatar-wrap">
+      <div class="profile-avatar">
+        <i class="fa-solid fa-user"></i>
+      </div>
+      <div class="online-dot"></div>
+    </div>
+    <div class="profile-info">
+      <h2>{{ user.username }}</h2>
+      <p class="profile-email">{{ user.email }}</p>
+      <span class="member-badge">
+        <i class="fa-solid fa-calendar-check"></i>
+        Member since {{ user.date_joined|date:"M Y" }}
+      </span>
+    </div>
+    <a href="{% url 'logout' %}" class="btn-logout">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>Logout</span>
+    </a>
+  </div>
+
+  <div class="profile-stats-row">
+    <div class="stat-card glass-panel">
+      <div class="stat-icon">
+        <i class="fa-solid fa-map-pin"></i>
+      </div>
+      <div class="stat-data">
+        <span class="stat-number">{{ saved_places.count }}</span>
+        <span class="stat-label">Saved Places</span>
+      </div>
+    </div>
+    <div class="stat-card glass-panel">
+      <div class="stat-icon">
+        <i class="fa-solid fa-comments"></i>
+      </div>
+      <div class="stat-data">
+        <span class="stat-number">{{ chat_history.count }}</span>
+        <span class="stat-label">Chat Messages</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-sections">
+    <div class="profile-card glass-panel">
+      <div class="card-header">
+        <div class="card-header-left">
+          <i class="fa-solid fa-bookmark"></i>
+          <h3>Saved Places</h3>
+        </div>
+        <span class="card-count" id="placeCount">{{ saved_places.count }}</span>
+      </div>
+
+      {% if saved_places %}
+      <div class="places-list">
+        {% for place in saved_places %}
+        <div class="place-item" id="place-{{ place.id }}">
+          <div class="place-icon">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+          <div class="place-info">
+            <h4>{{ place.name }}</h4>
+            <p>{{ place.latitude|floatformat:4 }}, {{ place.longitude|floatformat:4 }}</p>
+            {% if place.notes %}
+            <span class="place-notes">{{ place.notes|truncatewords:15 }}</span>
+            {% endif %}
+          </div>
+          <span class="place-date">{{ place.created_at|date:"M d" }}</span>
+          <button class="place-delete-btn"
+                  hx-post="/delete-place/{{ place.id }}/"
+                  hx-target="#place-{{ place.id }}"
+                  hx-swap="outerHTML swap:300ms"
+                  hx-confirm="Remove '{{ place.name }}'?"
+                  title="Remove">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-map-location-dot"></i>
+        <p>No saved places yet. Explore the map to discover destinations!</p>
+        <a href="{% url 'go_map' %}" class="btn-explore">
+          <i class="fa-solid fa-compass"></i>
+          <span>Explore Map</span>
+        </a>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="profile-card glass-panel">
+      <div class="card-header">
+        <div class="card-header-left">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <h3>Chat History</h3>
+        </div>
+        <span class="card-count">{{ chat_history.count }}</span>
+      </div>
+
+      {% if chat_history %}
+      <div class="chat-list">
+        {% for chat in chat_history %}
+        <div class="chat-item">
+          <div class="chat-user-msg">
+            <i class="fa-solid fa-user"></i>
+            <p>{{ chat.message|truncatewords:12 }}</p>
+          </div>
+          <div class="chat-bot-msg">
+            <i class="fa-solid fa-robot"></i>
+            <p>{{ chat.response|truncatewords:12 }}</p>
+          </div>
+          <span class="chat-date">{{ chat.created_at|date:"M d, H:i" }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-comments"></i>
+        <p>No chat history yet. Start a conversation with Raahi!</p>
+        <a href="{% url 'go_map' %}" class="btn-explore">
+          <i class="fa-solid fa-robot"></i>
+          <span>Start Chatting</span>
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

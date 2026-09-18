@@ -1,0 +1,216 @@
+open: http://127.0.0.1:8000/
+
+steps:
+    # ========== HOME PAGE ==========
+    # Wait for the page to fully load
+    - wait:
+          load_state: "networkidle"
+    - wait:
+          timeout: 500
+
+    # Verify the page title
+    - extract:
+          selector: title
+    - wait:
+          timeout: 200
+
+    # Extract the hero heading
+    - extract:
+          selector: .hero-content-box h2
+    - wait:
+          timeout: 200
+
+    # Extract the hero description
+    - extract:
+          selector: .hero-content-box p
+    - wait:
+          timeout: 200
+
+    # Extract all feature card headings
+    - extract:
+          selector: .feature-card h3
+          all: True
+    - wait:
+          timeout: 200
+
+    # Extract all feature card descriptions
+    - extract:
+          selector: .feature-card p
+          all: True
+    - wait:
+          timeout: 200
+
+    # Check the sidebar navigation links
+    - extract:
+          selector: .sidebar-link span
+          all: True
+    - wait:
+          timeout: 200
+
+    # Check the brand name
+    - extract:
+          selector: .brand h1
+    - wait:
+          timeout: 200
+
+    # ========== DESTINATIONS / MAP PAGE ==========
+    # Click on Destinations link in sidebar
+    - click:
+          selector: .sidebar-link
+          text: "Destinations"
+    - wait:
+          load_state: "networkidle"
+    - wait:
+          timeout: 500
+
+    # Extract the map page title
+    - extract:
+          selector: .chat-title-block h2
+    - wait:
+          timeout: 200
+
+    # Extract the chatbot welcome message
+    - extract:
+          selector: .bot-bubble p
+    - wait:
+          timeout: 200
+
+    # Extract the chip button labels
+    - extract:
+          selector: .chip-btn
+          all: True
+    - wait:
+          timeout: 200
+
+    # Check the search input placeholder
+    - extract:
+          selector: "#placeInput"
+          first: True
+    - wait:
+          timeout: 200
+
+    # Check the drive mode button text
+    - extract:
+          selector: "#driveModeBtn"
+    - wait:
+          timeout: 200
+
+    # Check the itinerary button text
+    - extract:
+          selector: "#discoverBtn"
+    - wait:
+          timeout: 200
+
+    # ========== SUPPORT PAGE ==========
+    # Click on Support link in sidebar
+    - click:
+          selector: .sidebar-link
+          text: "Support"
+    - wait:
+          load_state: "networkidle"
+    - wait:
+          timeout: 500
+
+    # Extract the support page heading
+    - extract:
+          selector: .support-hero h2
+    - wait:
+          timeout: 200
+
+    # Extract the support page description
+    - extract:
+          selector: .support-hero p
+    - wait:
+          timeout: 200
+
+    # Extract the form labels
+    - extract:
+          selector: .form-group label
+          all: True
+    - wait:
+          timeout: 200
+
+    # Extract the info card headings
+    - extract:
+          selector: .info-card h4
+          all: True
+    - wait:
+          timeout: 200
+
+    # Extract the info card descriptions
+    - extract:
+          selector: .info-card p
+          all: True
+    - wait:
+          timeout: 200
+
+    # Fill the support form
+    - fill:
+          selector: "#supportName"
+          value: "Test User"
+    - wait:
+          timeout: 200
+
+    - fill:
+          selector: "#supportEmail"
+          value: "test@example.com"
+    - wait:
+          timeout: 200
+
+    - fill:
+          selector: "#supportSubject"
+          value: "Testing Raahi Scraper"
+    - wait:
+          timeout: 200
+
+    - fill:
+          selector: "#supportMessage"
+          value: "This is an automated test of the Raahi support form using the web scraper."
+    - wait:
+          timeout: 200
+
+    # Extract the submit button text
+    - extract:
+          selector: "#supportSubmitBtn"
+    - wait:
+          timeout: 200
+
+    # ========== BACK TO HOME ==========
+    # Click on Home link in sidebar
+    - click:
+          selector: .sidebar-link
+          text: "Home"
+    - wait:
+          load_state: "networkidle"
+    - wait:
+          timeout: 500
+
+    # Verify we're back on the home page
+    - extract:
+          selector: .hero-content-box h2
+    - wait:
+          timeout: 200
+
+    # ========== SCREENSHOT & SAVE ==========
+    # Take a screenshot of the final state
+    - screenshot:
+          path: Scraper/output/raahi_screenshot.png
+          full_page: True
+    - wait:
+          timeout: 200
+
+    # Save all extracted data
+    - save:
+          path: Scraper/output/raahi_results.json
+          format: json
+    - wait:
+          timeout: 200
+
+    - save:
+          path: Scraper/output/raahi_results.csv
+          format: csv
+    - wait:
+          timeout: 200
+
+# ========== CLOSE ==========
+close:

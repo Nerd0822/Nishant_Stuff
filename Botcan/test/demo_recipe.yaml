@@ -1,0 +1,180 @@
+open: file:///home/golu/Nishant_stuff/Scraper/demo_site.html
+
+steps:
+    # ========== HOME TAB ==========
+    # Extract the page heading (single element)
+    - extract:
+          selector: header h1
+    - wait:
+          timeout: 200
+
+    # Extract all feature list items
+    - extract:
+          selector: .feature-list li
+          all: True
+    - wait:
+          timeout: 200
+
+    # Extract the first testimonial
+    - extract:
+          selector: .testimonial
+          first: True
+    - wait:
+          timeout: 200
+
+    # ========== PRODUCTS TAB ==========
+    - click:
+          selector: .tab-link
+          text: "Products"
+    - wait:
+          timeout: 300
+
+    # Extract all product names
+    - extract:
+          selector: .product-card h3
+          all: True
+    - wait:
+          timeout: 200
+
+    # Extract all product prices
+    - extract:
+          selector: .price
+          all: True
+    - wait:
+          timeout: 200
+
+    # ========== ABOUT TAB ==========
+    - click:
+          selector: .tab-link
+          text: "About"
+    - wait:
+          timeout: 300
+
+    # Extract team member names
+    - extract:
+          selector: "#about .feature-list li"
+          all: True
+    - wait:
+          timeout: 200
+
+    # ========== CONTACT TAB ==========
+    - click:
+          selector: .tab-link
+          text: "Contact"
+    - wait:
+          timeout: 300
+
+    # Fill form fields
+    - fill:
+          selector: "#name"
+          value: "Test User"
+    - wait:
+          timeout: 200
+
+    - fill:
+          selector: "#email"
+          value: "test@example.com"
+    - wait:
+          timeout: 200
+
+    - fill:
+          selector: "#message"
+          value: "This is a test message from the scraper."
+    - wait:
+          timeout: 200
+
+    # Select a dropdown option
+    - select:
+          selector: "#subject"
+          value: "support"
+    - wait:
+          timeout: 200
+
+    # ========== BLOG TAB ==========
+    - click:
+          selector: .tab-link
+          text: "Blog"
+    - wait:
+          timeout: 300
+
+    # Extract all blog article headings
+    - extract:
+          selector: "#blog article h3"
+          all: True
+    - wait:
+          timeout: 200
+
+    # ========== LAB TAB ==========
+    - click:
+          selector: .tab-link
+          text: "Lab"
+    - wait:
+          timeout: 300
+
+    # Hover over the hover-card to reveal hidden content
+    - hover:
+          selector: ".hover-card"
+    - wait:
+          timeout: 300
+
+    # Extract the revealed hover content
+    - extract:
+          selector: ".hover-content"
+    - wait:
+          timeout: 200
+
+    # Select a dropdown option in the lab section
+    - select:
+          selector: "#lab-subject"
+          value: "option-c"
+    - wait:
+          timeout: 200
+
+    # Click the "Load More" button to reveal extra content
+    - click:
+          selector: "#loadMoreBtn"
+    - wait:
+          timeout: 500
+
+    # Extract the lazy-loaded items
+    - extract:
+          selector: ".lazy-item"
+          all: True
+    - wait:
+          timeout: 200
+
+    # Scroll to the target at the bottom of the scroll container
+    - scroll:
+          selector: "#scroll-target"
+    - wait:
+          timeout: 300
+
+    # Extract the scroll target text
+    - extract:
+          selector: "#scroll-target"
+    - wait:
+          timeout: 200
+
+    # ========== SCREENSHOT & SAVE ==========
+    # Take a full-page screenshot
+    - screenshot:
+          path: Scraper/output/demo_screenshot.png
+          full_page: True
+    - wait:
+          timeout: 200
+
+    # Save all extracted data to JSON
+    - save:
+          path: Scraper/output/demo_json_results.json
+          format: json
+    - wait:
+          timeout: 200
+
+    - save:
+          path: Scraper/output/demo_csv_results.csv
+          format: csv
+    - wait:
+          timeout: 200
+
+# ========== CLOSE ==========
+close:

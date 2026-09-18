@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block hero %}
+<div class="auth-page">
+  <div class="auth-container">
+    <div class="auth-visual">
+      <div class="visual-content">
+        <div class="visual-icon">
+          <i class="fa-solid fa-compass animate-compass"></i>
+        </div>
+        <h2>Start your journey with <span>Raahi</span></h2>
+        <p>Join thousands of travelers exploring the world with AI-powered guidance.</p>
+        <div class="visual-stats">
+          <div class="stat">
+            <i class="fa-solid fa-globe"></i>
+            <span>50+ Destinations</span>
+          </div>
+          <div class="stat">
+            <i class="fa-solid fa-comments"></i>
+            <span>Smart Chat</span>
+          </div>
+          <div class="stat">
+            <i class="fa-solid fa-route"></i>
+            <span>Live Routing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-form-wrap">
+      <div class="auth-card glass-panel">
+        <div class="auth-header">
+          <div class="auth-icon-wrap">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <h2>Create Account</h2>
+          <p>Fill in your details to get started</p>
+        </div>
+
+        {% if form.errors %}
+        <div class="auth-alert error">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span>Please fix the errors below.</span>
+        </div>
+        {% endif %}
+
+        <form method="post" class="auth-form">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label for="id_username">Username</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-user"></i>
+              <input type="text" name="username" id="id_username" placeholder="Choose a username" value="{{ form.username.value|default:'' }}" required autofocus />
+            </div>
+            {% if form.username.errors %}
+            <span class="field-error">{{ form.username.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="id_password1">Password</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-lock"></i>
+              <input type="password" name="password1" id="id_password1" placeholder="Create a strong password" required />
+            </div>
+            {% if form.password1.errors %}
+            <span class="field-error">{{ form.password1.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="id_password2">Confirm Password</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-lock"></i>
+              <input type="password" name="password2" id="id_password2" placeholder="Re-enter your password" required />
+            </div>
+            {% if form.password2.errors %}
+            <span class="field-error">{{ form.password2.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn-auth-submit">
+            <span>Create Account</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+
+        <div class="auth-divider">
+          <span>Already have an account?</span>
+        </div>
+
+        <a href="{% url 'login' %}" class="btn-auth-secondary">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Log In Instead</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

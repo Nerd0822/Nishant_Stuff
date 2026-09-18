@@ -1,0 +1,17 @@
+<div class="place-item" id="place-{{ place.id }}">
+    <div class="place-icon"><i class="fa-solid fa-location-dot"></i></div>
+    <div class="place-info">
+      <h4>{{ place.name }}</h4>
+      <p>{{ place.latitude|floatformat:4 }}, {{ place.longitude|floatformat:4 }}</p>
+    </div>
+    <span class="place-date">{{ place.created_at|date:"M d" }}</span>
+    <button class="place-delete-btn"
+            hx-post="/delete-place/{{ place.id }}/"
+            hx-target="#place-{{ place.id }}"
+            hx-swap="outerHTML swap:300ms"
+            hx-confirm="Remove '{{ place.name }}'?"
+            title="Remove">
+      <i class="fa-solid fa-trash-can"></i>
+    </button>
+  </div>
+  

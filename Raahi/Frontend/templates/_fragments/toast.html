@@ -1,0 +1,10 @@
+<div id="toast" class="toast toast-{{ type }}" hx-trigger="load delay:4s" hx-delete="/toasts/toast">
+    <div class="toast-icon"><i class="{{ icon }}"></i></div>
+    <div class="toast-content">
+      <span class="toast-title">{{ title }}</span>
+      {% if message %}<span class="toast-message">{{ message }}</span>{% endif %}
+    </div>
+    <button class="toast-close" onclick="this.closest('.toast').remove()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>

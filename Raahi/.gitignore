@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.git
+.gitignore
+.env
+venv/
+*.egg-info
+db.sqlite3
+
+staticfiles/
+
+
+on_meds/
+ml_shit/

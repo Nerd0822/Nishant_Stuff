@@ -1,0 +1,6 @@
+# YOLO & Computer Vision
+ultralytics>=8.0.0
+opencv-python>=4.8.0
+
+# Core ML dependencies (included with ultralytics)
+# torch, torchvision, numpy, matplotlib, pillow, pyyaml, scipy, requests

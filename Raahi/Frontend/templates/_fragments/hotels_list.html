@@ -1,0 +1,29 @@
+<div class="message bot-bubble">
+  <div class="bot-avatar-small"><i class="fa-solid fa-robot"></i></div>
+  <div>
+    <strong>🏨 Hotels near {{ place_name }}:</strong>
+    <div style="margin-top:10px;display:flex;flex-direction:column;gap:10px;">
+      {% for hotel in hotels %}
+      <div style="background:rgba(60,30,15,0.6);border-radius:8px;padding:10px;display:flex;gap:12px;align-items:center;">
+        {% if hotel.thumbnail %}
+        <img src="{{ hotel.thumbnail }}" style="width:70px;height:55px;object-fit:cover;border-radius:6px;" alt="">
+        {% endif %}
+        <div>
+          <strong>{{ hotel.title }}</strong>
+          {% if hotel.address %}
+          <br><span style="font-size:0.85rem;opacity:0.8;">{{ hotel.address }}</span>
+          {% endif %}
+          {% if hotel.rating %}
+          <br><span>⭐ {{ hotel.rating }} ({{ hotel.reviews }} reviews)</span>
+          {% endif %}
+          {% if hotel.price %}
+          <br><span style="color:#059669;font-weight:700;">{{ hotel.price }}</span>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <p>No hotels found near <strong>{{ place_name }}</strong>.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>

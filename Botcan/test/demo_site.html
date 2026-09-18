@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Site for Scraper Testing</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #333; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0 30px;
+            text-align: center;
+        }
+        header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        header p { font-size: 1.1em; opacity: 0.9; }
+
+        nav.tabs {
+            background: white;
+            border-bottom: 2px solid #e0e0e0;
+            padding: 0 20px;
+        }
+        nav.tabs ul {
+            list-style: none;
+            display: flex;
+            gap: 0;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        nav.tabs ul li a {
+            display: block;
+            padding: 14px 28px;
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        nav.tabs ul li a:hover,
+        nav.tabs ul li a.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        section.page-section {
+            display: none;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        section.page-section.active {
+            display: block;
+        }
+        section.page-section h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #444;
+        }
+        section.page-section h3 {
+            font-size: 1.3em;
+            margin: 20px 0 12px;
+            color: #555;
+        }
+        section.page-section p {
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .product-card {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .product-card h3 { color: #667eea; margin-bottom: 8px; }
+        .product-card .price {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #e67e22;
+            margin-bottom: 8px;
+        }
+        .product-card .description { color: #666; font-size: 0.95em; }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+        .feature-list li {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            font-size: 1.05em;
+        }
+        .feature-list li:last-child { border-bottom: none; }
+        .feature-list li::before {
+            content: "✓";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .contact-form { max-width: 500px; margin-top: 20px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #555;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.2s;
+            background: white;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-group textarea { height: 100px; resize: vertical; }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-submit:hover { opacity: 0.9; }
+
+        .testimonial {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 18px 20px;
+            margin-bottom: 16px;
+            border-radius: 0 8px 8px 0;
+        }
+        .testimonial .author {
+            font-weight: 600;
+            color: #667eea;
+            margin-top: 8px;
+        }
+
+        .article-meta {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 12px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .hover-card {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        .hover-trigger {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            display: inline-block;
+            cursor: default;
+            font-weight: 600;
+        }
+        .hover-content {
+            display: none;
+            margin-top: 16px;
+            padding: 16px;
+            background: #e8f4fd;
+            border-radius: 6px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        .hover-card:hover .hover-content {
+            display: block;
+        }
+
+        .lazy-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .lazy-item {
+            display: none;
+            padding: 16px;
+            margin: 10px 0;
+            background: #e8f4fd;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .lazy-item.visible {
+            display: block;
+        }
+        .btn-load {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-load:hover { opacity: 0.9; }
+
+        .secret-box {
+            display: inline-block;
+            padding: 20px 30px;
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .scroll-container {
+            height: 800px;
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+        }
+        .scroll-container p {
+            margin-bottom: 40px;
+        }
+        #scroll-target {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #155724;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 16px 20px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>Scraper Demo Store</h1>
+            <p>A sample website for testing your web scraper — click, extract, fill, hover, scroll, and more!</p>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <ul>
+            <li><a href="#home" class="tab-link active" data-target="home">Home</a></li>
+            <li><a href="#products" class="tab-link" data-target="products">Products</a></li>
+            <li><a href="#about" class="tab-link" data-target="about">About</a></li>
+            <li><a href="#contact" class="tab-link" data-target="contact">Contact</a></li>
+            <li><a href="#blog" class="tab-link" data-target="blog">Blog</a></li>
+            <li><a href="#lab" class="tab-link" data-target="lab">Lab</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <!-- ========== HOME SECTION ========== -->
+        <section id="home" class="page-section active">
+            <h2>Welcome to Scraper Demo Store</h2>
+            <p>This is a <strong>demo website</strong> built specifically for testing your web scraper script. It contains various elements you can interact with: clickable tabs, product listings, forms, hover effects, lazy-loaded content, and more.</p>
+            <p>Try extracting the features listed below, or click on any navigation link above!</p>
+
+            <h3>Our Key Features</h3>
+            <ul class="feature-list">
+                <li>Fast worldwide shipping</li>
+                <li>24/7 customer support</li>
+                <li>30-day money-back guarantee</li>
+                <li>Secure payment processing</li>
+                <li>Free returns within 15 days</li>
+            </ul>
+
+            <h3>What Our Customers Say</h3>
+            <div class="testimonial">
+                <p>"Amazing products and incredibly fast delivery. Highly recommended!"</p>
+                <p class="author">— Sarah Johnson</p>
+            </div>
+            <div class="testimonial">
+                <p>"The quality exceeded my expectations. I'll definitely be ordering again."</p>
+                <p class="author">— Michael Chen</p>
+            </div>
+            <div class="testimonial">
+                <p>"Customer support was outstanding. They helped me with everything I needed."</p>
+                <p class="author">— Priya Sharma</p>
+            </div>
+        </section>
+
+        <!-- ========== PRODUCTS SECTION ========== -->
+        <section id="products" class="page-section">
+            <h2>Our Products</h2>
+            <p>Browse our collection of premium products. Each card contains a name, price, and description.</p>
+
+            <div class="product-grid">
+                <div class="product-card">
+                    <h3>Wireless Headphones</h3>
+                    <div class="price">$79.99</div>
+                    <div class="description">Premium noise-cancelling wireless headphones with 30-hour battery life.</div>
+                </div>
+                <div class="product-card">
+                    <h3>Smart Watch</h3>
+                    <div class="price">$199.99</div>
+                    <div class="description">Fitness tracking smart watch with heart rate monitor and GPS.</div>
+                </div>
+                <div class="product-card">
+                    <h3>Bluetooth Speaker</h3>
+                    <div class="price">$49.99</div>
+                    <div class="description">Portable waterproof speaker with deep bass and 12-hour playback.</div>
+                </div>
+                <div class="product-card">
+                    <h3>Laptop Stand</h3>
+                    <div class="price">$34.99</div>
+                    <div class="description">Ergonomic aluminum laptop stand with adjustable height and angle.</div>
+                </div>
+                <div class="product-card">
+                    <h3>USB-C Hub</h3>
+                    <div class="price">$42.99</div>
+                    <div class="description">7-in-1 USB-C hub with HDMI, USB 3.0, SD card reader, and more.</div>
+                </div>
+                <div class="product-card">
+                    <h3>Mechanical Keyboard</h3>
+                    <div class="price">$89.99</div>
+                    <div class="description">RGB mechanical keyboard with Cherry MX Blue switches and aluminum frame.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== ABOUT SECTION ========== -->
+        <section id="about" class="page-section">
+            <h2>About Us</h2>
+            <p>We are a passionate team of developers and designers dedicated to providing high-quality products at affordable prices. Founded in 2020, our mission is to make technology accessible to everyone.</p>
+
+            <h3>Our Team</h3>
+            <ul class="feature-list">
+                <li><strong>Alice</strong> — CEO & Co-Founder</li>
+                <li><strong>Bob</strong> — CTO & Co-Founder</li>
+                <li><strong>Charlie</strong> — Lead Designer</li>
+                <li><strong>Diana</strong> — Marketing Head</li>
+                <li><strong>Eve</strong> — Customer Support Lead</li>
+            </ul>
+
+            <p>We are committed to delivering excellence in every product we sell. Your satisfaction is our top priority.</p>
+        </section>
+
+        <!-- ========== CONTACT SECTION ========== -->
+        <section id="contact" class="page-section">
+            <h2>Contact Us</h2>
+            <p>Have a question? Fill out the form below and we'll get back to you within 24 hours.</p>
+
+            <div class="contact-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="John Doe" />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="john@example.com" />
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <select id="subject" name="subject">
+                        <option value="">Select a subject</option>
+                        <option value="support">Customer Support</option>
+                        <option value="sales">Sales Inquiry</option>
+                        <option value="feedback">Feedback</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" placeholder="Write your message here..."></textarea>
+                </div>
+                <button type="button" class="btn-submit" id="submitBtn">Send Message</button>
+            </div>
+        </section>
+
+        <!-- ========== BLOG SECTION ========== -->
+        <section id="blog" class="page-section">
+            <h2>Latest Blog Posts</h2>
+            <p>Read our latest articles about technology, product reviews, and industry insights.</p>
+
+            <article class="testimonial">
+                <h3>Top 10 Gadgets of 2025</h3>
+                <div class="article-meta">By Alex — Published on Jan 15, 2025</div>
+                <p>Discover the most innovative gadgets that are shaping the future of technology...</p>
+            </article>
+
+            <article class="testimonial">
+                <h3>How to Choose the Perfect Headphones</h3>
+                <div class="article-meta">By Jordan — Published on Dec 28, 2024</div>
+                <p>From wired to wireless, over-ear to in-ear — here's everything you need to know...</p>
+            </article>
+        </section>
+
+        <!-- ========== LAB SECTION (Scraper Testing Playground) ========== -->
+        <section id="lab" class="page-section">
+            <h2>Scraper Testing Lab</h2>
+            <p>This section contains interactive elements specifically designed to test every action in your scraper.</p>
+
+            <!-- HOVER DEMO -->
+            <h3>Hover Reveal</h3>
+            <p>Hover over the button below to reveal hidden content. Test the <code>hover</code> action then <code>extract</code> the revealed text.</p>
+            <div class="hover-card">
+                <div class="hover-trigger">Hover over me!</div>
+                <div class="hover-content">🎉 You found the hidden content! This text appears when you hover.</div>
+            </div>
+
+            <!-- SELECT DEMO (already included in contact form above) -->
+            <h3>Select Dropdown</h3>
+            <p>A standalone dropdown for testing the <code>select</code> action. The Contact form above also has one.</p>
+            <div class="form-group">
+                <label for="lab-subject">Choose an option:</label>
+                <select id="lab-subject" name="lab-subject" style="max-width:300px;">
+                    <option value="">-- Select --</option>
+                    <option value="option-a">Option A</option>
+                    <option value="option-b">Option B</option>
+                    <option value="option-c">Option C</option>
+                    <option value="option-d">Option D</option>
+                </select>
+            </div>
+
+            <!-- LAZY LOAD / WAIT DEMO -->
+            <h3>Lazy Load (Wait)</h3>
+            <p>Click the button below to load content after a 2-second delay. Test <code>click</code> then <code>wait</code> for the new content to appear, then <code>extract</code> it.</p>
+            <div class="lazy-section">
+                <button class="btn-load" id="loadMoreBtn">Load More Content</button>
+                <div id="lazyContainer">
+                    <div class="lazy-item" id="lazy-item-1">🔄 Click the button to load this...</div>
+                </div>
+            </div>
+
+            <!-- EVALUATE / JS DEMO -->
+            <h3>JavaScript Evaluation</h3>
+            <p>Test the <code>evaluate</code> action by reading the <code>data-secret</code> attribute from the element below.</p>
+            <div class="secret-box" id="secret-data" data-secret="42">Hover in inspector to see data-secret attribute</div>
+
+            <!-- SCROLL DEMO -->
+            <h3>Scroll to Element</h3>
+            <p>Test <code>scroll</code> action by scrolling to the target box below. The scroll container is 800px tall.</p>
+            <div class="scroll-container" id="scrollContainer">
+                <p>Scroll down to find the target element...</p>
+                <p>Keep going...</p>
+                <p>Almost there...</p>
+                <p>Just a little more...</p>
+                <div id="scroll-target">🎯 You reached the scroll target!</div>
+            </div>
+
+            <!-- SCREENSHOT DEMO -->
+            <h3>Screenshot Area</h3>
+            <p>This entire Lab section is a great candidate for a <code>screenshot</code> test. Try taking a full-page screenshot after interacting with elements.</p>
+            <div class="code-block">
+                # Example YAML for screenshot
+                - screenshot:
+                    path: output/lab_section.png
+                    full_page: true
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Scraper Demo Store. Built for testing purposes.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.tab-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+
+                this.classList.add('active');
+
+                const target = this.getAttribute('data-target');
+                document.getElementById(target).classList.add('active');
+            });
+        });
+
+        document.getElementById('submitBtn')?.addEventListener('click', function() {
+            alert('Form submitted! (This is a demo — no data is actually sent.)');
+        });
+
+        document.getElementById('loadMoreBtn')?.addEventListener('click', function() {
+            const container = document.getElementById('lazyContainer');
+            const items = [
+                '📦 Lazy-loaded item 1 — loaded on click!',
+                '📦 Lazy-loaded item 2 — also dynamically loaded!',
+                '📦 Lazy-loaded item 3 — last one!'
+            ];
+
+            this.disabled = true;
+            this.textContent = '✅ Loaded!';
+            this.style.background = '#95a5a6';
+
+            items.forEach((text, i) => {
+                const div = document.createElement('div');
+                div.className = 'lazy-item';
+                div.id = 'lazy-item-' + (i + 2);
+                div.textContent = text;
+                container.appendChild(div);
+                div.classList.add('visible');
+            });
+        });
+    </script>
+
+</body>
+</html>
