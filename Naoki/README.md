@@ -36,7 +36,7 @@ local model (`ornith-1.5:9b`). Replies can be spoken out loud.
 |---|---|
 | `tui.py` | Rich terminal UI (entry point). Run this. |
 | `core.py` | Agent loop: model → tool calls → results → answer. Print/input-free so other front-ends can reuse `run_agent()`. |
-| `tools.py` | All tools + the `TOOLS` name → function dict (Ollama builds the tool schemas from these functions). |
+| `tools/` | Tool subpackage by category (`files`, `shell`, `web`, `memory`, `desktop`, `models`); `tools/__init__.py` assembles the `TOOLS` name → function dict Ollama builds schemas from. |
 | `prompt.py` | System prompt: rules, guardrails, tool list, date, stored user facts. |
 | `helper.py` | Conversation state, `history.json` persistence, `about_me.json` profile storage. |
 | `config.py` | Models, limits, file paths, search keys, TTS settings. |
@@ -83,13 +83,19 @@ In the TUI, just type. Useful commands:
 - `/voice` — show engine status; `/voice flite|edge|kokoro` — switch live
 - `/exit` — quit (`exit`, `quit`, Ctrl+C / Ctrl+D work too)
 
-## Tools (13)
+## Tools (19)
 
 File: `read_file`, `write_file` (backs up the original to
 `<name>.bak-YYYYMMDD-HHMMSS` before overwriting, restores it if the write
-fails), `list_directory`, `find_files`, `file_info`, `copy_file` / `move_file`
-(both refuse to overwrite existing files), `make_directory`, `run_command`
-(60 s timeout, capped output).
+fails), `append_to_file` (grows logs/notes without erasing), `list_directory`,
+`current_directory` ("where am I / here"), `find_files`, `file_info`,
+`copy_file` / `move_file` (both refuse to overwrite existing files),
+`make_directory`, `open_file` (opens files/folders via xdg-open).
+
+Desktop: `system_info` (OS, CPU, memory, disk, uptime, session -- call it
+instead of guessing specs), `clipboard_copy` (Wayland/X11), `take_note`
+(timestamped notes to `~/notes.txt`), `run_command` (60 s timeout,
+capped output).
 
 Web: `search_wikipedia` (keyless official API), `search_google` (official
 Google API with keys, DuckDuckGo fallback without).

@@ -9,6 +9,7 @@ from rich.panel import Panel
 from rich.text import Text
 
 import voice
+from config import TUI_TOOL_PREVIEW_CHARS
 from core import run_agent
 from helper import conversation, load_history, save_history
 
@@ -107,9 +108,24 @@ def main() -> None:
             console.print("[dim]unknown command — try /help[/dim]")
             continue
 
+        def show_tool_event(kind, tool_name, payload):
+            if kind == "call":
+                console.print(
+                    f"[dim yellow]⚙ {tool_name}[/dim yellow]",
+                    Text(str(payload)),
+                )
+            else:
+                preview = str(payload)
+                if len(preview) > TUI_TOOL_PREVIEW_CHARS:
+                    preview = (
+                        preview[:TUI_TOOL_PREVIEW_CHARS]
+                        + f"\n... [showing first {TUI_TOOL_PREVIEW_CHARS} chars]"
+                    )
+                console.print(f"[dim green]✔ {tool_name}[/dim green]", Text(preview))
+
         try:
             with console.status("[dim]naoki is thinking...[/dim]", spinner="dots"):
-                reply = run_agent(user_text)
+                reply = run_agent(user_text, on_tool_event=show_tool_event)
         except KeyboardInterrupt:
             console.print("[dim]cancelled[/dim]")
             continue
@@ -127,3 +143,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# to do:
+# the output in theinfo is not structered well

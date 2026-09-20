@@ -20,8 +20,13 @@ def call_primary_model():
     )
 
 
-def run_agent(user_input: str) -> str:
-    """Run one full request: model -> tool calls -> tool results -> answer."""
+def run_agent(user_input: str, on_tool_event=None) -> str:
+    """Run one full request: model -> tool calls -> tool results -> answer.
+
+    on_tool_event, when given, is called with ("call", name, args) before a
+    tool runs and ("result", name, result_text) after it finishes, so a
+    front-end can show what the model is doing. core never prints itself.
+    """
     conversation.append(create_user_message(user_input))
 
     for _ in range(MAX_TURNS):
@@ -36,6 +41,8 @@ def run_agent(user_input: str) -> str:
         for tool_call in response.message.tool_calls:
             tool_name = tool_call.function.name
             tool_args = dict(tool_call.function.arguments)
+            if on_tool_event is not None:
+                on_tool_event("call", tool_name, tool_args)
             tool_function = TOOLS.get(tool_name)
 
             try:
@@ -54,6 +61,8 @@ def run_agent(user_input: str) -> str:
             conversation.append(
                 {"role": "tool", "tool_name": tool_name, "content": str(tool_result)}
             )
+            if on_tool_event is not None:
+                on_tool_event("result", tool_name, str(tool_result))
     else:
         reply = (
             f"(stopped after {MAX_TURNS} rounds of tool calls without a final answer)"

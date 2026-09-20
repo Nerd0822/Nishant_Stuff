@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import unicodedata
 from pathlib import Path
 
 from config import (
@@ -48,6 +49,16 @@ def _clean_for_speech(text: str) -> str:
     text = re.sub(r"`([^`]*)`", r"\1", text)
     text = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", text)  # [label](url) -> label
     text = re.sub(r"[*_#>]+", "", text)
+    # Drop emojis/symbols/pictographs a small model may emit anyway: TTS
+    # engines read them as literal names ("smiling face", "black star") or
+    # beep over them. Kept: ASCII letters/digits/common punctuation, plus any
+    # unicode letter/mark/number (covers Devanagari, accents, etc.).
+    text = "".join(
+        ch
+        for ch in text
+        if (ch.isascii() and (ch.isalnum() or ch.isspace() or ch in ".,!?;:'\"()-+/=%@&"))
+        or (not ch.isascii() and unicodedata.category(ch)[0] in "LMN")
+    )
     text = re.sub(r"\s+", " ", text).strip()
     if len(text) > TTS_MAX_CHARS:
         text = text[:TTS_MAX_CHARS].rsplit(" ", 1)[0] + " ..."

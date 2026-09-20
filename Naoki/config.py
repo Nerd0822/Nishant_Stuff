@@ -1,7 +1,9 @@
 from pathlib import Path
 
 # Models
-PRIMARY_MODEL = "qwen3:1.7b"
+PRIMARY_MODEL = "llama3.2:1b"
+# PRIMARY_MODEL = "qwen3:0.6b"
+# PRIMARY_MODEL = "qwen3:1.7b"
 ADVANCED_MODEL = "ornith-1.5:9b"  # exact local tag
 ADVANCED_KEEP_ALIVE = 0  # seconds the advanced model stays loaded (0 = unload right after answering)
 
@@ -31,3 +33,4 @@ TTS_KOKORO_VOICE = "af_heart"  # kokoro voice (female)
 TTS_KOKORO_MODEL = BASE_DIR / "models" / "kokoro-v1.0.onnx"
 TTS_KOKORO_VOICES = BASE_DIR / "models" / "voices-v1.0.bin"
 TTS_MAX_CHARS = 600  # replies are cut to this before speaking
+TUI_TOOL_PREVIEW_CHARS = 1200  # tool-call preview length shown in the TUI
