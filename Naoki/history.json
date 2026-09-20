@@ -1,0 +1,84 @@
+[
+  {
+    "role": "user",
+    "content": "hello"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello! How can I assist you today?"
+  },
+  {
+    "role": "user",
+    "content": "can you see all of my files in the Noaki project"
+  },
+  {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+      {
+        "function": {
+          "name": "list_directory",
+          "arguments": {
+            "directory_path": "~"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "tool",
+    "tool_name": "list_directory",
+    "content": "tool error: FileNotFoundError: [Errno 2] No such file or directory: '~'"
+  },
+  {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+      {
+        "function": {
+          "name": "find_files",
+          "arguments": {
+            "directory_path": "~",
+            "pattern": "Noaki"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "tool",
+    "tool_name": "find_files",
+    "content": "no files matching 'Noaki' under ~"
+  },
+  {
+    "role": "assistant",
+    "content": "The Noaki project was not found in the ~ directory or its subdirectories. Please provide the exact path to the Noaki project or specify whether it's located in a particular folder. I'll search again with the correct path once you clarify!"
+  },
+  {
+    "role": "user",
+    "content": "the file path is /home/nishant/Nishant_stuff/"
+  },
+  {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+      {
+        "function": {
+          "name": "list_directory",
+          "arguments": {
+            "directory_path": "/home/nishant/Nishant_stuff/"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "tool",
+    "tool_name": "list_directory",
+    "content": ".env\n.git/\n.gitignore\nBotcan/\nNano_see/\nNaoki/\nRaahi/\ndjango_tuto/\ndrf_tuto/\nfastapi_tuto/\nflask_tuto/\nideas.txt\nml_shit/\non_meds/\npytorch_tuto/\nscikit_learn_tuto/\nyt_downloader/"
+  },
+  {
+    "role": "assistant",
+    "content": "The Noaki project contains the following files and folders:\n\n```\n.env\n.git/\n.gitignore\nBotcan/\nNano_see/\nNaoki/\nRaahi/\ndjango_tuto/\ndrf_tuto/\nfastapi_tuto/\nflask_tuto/\nideas.txt\nml_shit/\non_meds/\npytorch_tuto/\nscikit_learn_tuto/\nyt_downloader/\n```\n\nLet me know if you'd like to explore a specific folder or check file details!"
+  }
+]

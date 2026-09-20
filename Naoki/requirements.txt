@@ -1,0 +1,10 @@
+# Core (required)
+ollama==0.6.2      # local model server client; drives primary + advanced models
+rich==15.0.0       # terminal UI in tui.py
+
+# TTS: edge (online neural voices, default engine)
+edge-tts==7.2.8    # Microsoft neural voices via the edge-tts CLI; needs internet
+
+# TTS: kokoro (offline neural voices, optional) -- uncomment to use
+# kokoro-onnx==0.6.1  # offline neural TTS; needs the model files in ./models
+# soundfile           # writes kokoro output to .wav for playback
