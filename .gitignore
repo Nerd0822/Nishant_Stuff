@@ -225,3 +225,6 @@ ml_shit/
 
 *.csv
 dataset/
+models/
+# Naoki models (large binary files - not for version control)
+Naoki/models/
