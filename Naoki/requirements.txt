@@ -1,10 +1,20 @@
-# Core (required)
-ollama==0.6.2      # local model server client; drives primary + advanced models
-rich==15.0.0       # terminal UI in tui.py
-
-# TTS: edge (online neural voices, default engine)
-edge-tts==7.2.8    # Microsoft neural voices via the edge-tts CLI; needs internet
-
-# TTS: kokoro (offline neural voices, optional) -- uncomment to use
-# kokoro-onnx==0.6.1  # offline neural TTS; needs the model files in ./models
-# soundfile           # writes kokoro output to .wav for playback
+# Naoki runtime. Everything is local: Ollama models + FAISS on disk.
+# Install once into your venv:  ../ml_shit/bin/python -m pip install -r requirements.txt
+langchain-core==1.6.2
+langchain-ollama==1.1.0
+langgraph==1.2.11
+langchain-community==0.4.2
+langchain-text-splitters==1.1.2
+faiss-cpu==1.15.0
+ollama==0.6.2
+rich==15.0.0
+Pillow==12.3.0
+numpy==2.5.3
+faster-whisper==1.2.1
+kokoro-onnx==0.6.1
+soundfile==0.14.0
+edge-tts==7.2.8
+# Optional: enables the download_media tool (YouTube etc as MP3/MP4).
+# Not required -- file/page downloads are stdlib-only. Install with:
+#   uv pip install --python ../ml_shit/bin/python yt-dlp
+# yt-dlp

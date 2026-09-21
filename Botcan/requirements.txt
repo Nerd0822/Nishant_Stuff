@@ -1,3 +1,5 @@
 # Web Scraping
 playwright>=1.40.0
 PyYAML>=6.0
+# MCP server (mcp_server.py) -- lets Naoki drive Botcan over stdio
+mcp>=1.0.0

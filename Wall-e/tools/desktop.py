@@ -1,24 +1,27 @@
-"""Things that touch the graphical session: opening files, clipboard."""
+"""Desktop tools: launching files and clipboard access."""
 
 import shutil
 import subprocess
 from pathlib import Path
 
+from ._common import tool
 
+
+@tool
 def launch_file(path: str) -> str:
-    """Open a file, screenshot, or folder in its default app. Returns at once.
+    """Open a file or directory with the desktop's default application.
 
-    Named launch_file (not open_file) so the model never confuses it with
-    read_file, which returns contents to the model instead.
+    Use this when the user says 'open' or 'show' something -- a PDF, image,
+    screenshot, or folder in the file manager. Runs detached via xdg-open
+    so it never blocks the assistant; returns immediately after launching.
+    (To read a file's contents for yourself, use read_file instead.)
 
     Args:
-        path: Absolute path to open.
+        path: Absolute path of the file or directory to open.
     """
     target = Path(path)
     if not target.exists():
         return f"{path} does not exist"
-    # Detached + new session: the viewer must outlive this tool call, and
-    # xdg-open itself returns immediately anyway.
     subprocess.Popen(
         ["xdg-open", str(target)],
         stdout=subprocess.DEVNULL,
@@ -28,13 +31,16 @@ def launch_file(path: str) -> str:
     return f"opened {path} with the default application"
 
 
+@tool
 def copy_to_clipboard(text: str) -> str:
-    """Put text on the system clipboard. Write-only, nothing is read back.
+    """Copy text to the system clipboard (Wayland and X11 supported).
+
+    Use this when the user says "copy this to my clipboard" -- a command, a
+    password they generated elsewhere, an address. Reads nothing back.
 
     Args:
-        text: Exact text to place on the clipboard.
+        text: The exact text to place on the clipboard.
     """
-    # wl-copy first: this box runs Wayland, xclip is the X11 fallback.
     for command in (["wl-copy"], ["xclip", "-selection", "clipboard"]):
         if shutil.which(command[0]) is None:
             continue

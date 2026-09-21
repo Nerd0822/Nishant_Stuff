@@ -1,0 +1,6 @@
+{# Partial template: renders a single assistant message bubble.
+   Used by HTXHR for streaming a response back into the chat. #}
+<div class="message assistant" id="assistant-msg">
+    <div class="avatar">🤖</div>
+    <div class="message-content">{{ content|linebreaksbr }}</div>
+</div>

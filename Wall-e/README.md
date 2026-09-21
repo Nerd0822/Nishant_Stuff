@@ -1,6 +1,6 @@
-# Naoki — local desktop assistant
+# Wall-e — local desktop assistant
 
-Naoki is a small, fully local AI assistant that runs on your Linux machine.
+Wall-e is a small, fully local AI assistant that runs on your Linux machine.
 A small primary model (`qwen3:1.7b`) acts as the orchestrator: it talks to
 you, calls tools, and delegates hard reasoning or code-writing to a bigger
 local model (`ornith-1.5:9b`). Replies can be spoken out loud.
@@ -10,11 +10,11 @@ local model (`ornith-1.5:9b`). Replies can be spoken out loud.
                  │
                  ▼
           PRIMARY_MODEL
-           qwen3:1.7b
+           ornith-1.5:9b
                  │
         ┌────────┼────────┐
         ▼        ▼        ▼
-   file tools  web tools delegate_to_advanced_model
+   file tools  web tools ask_expert
                                   │
                                   ▼
                             ADVANCED_MODEL
@@ -36,7 +36,7 @@ local model (`ornith-1.5:9b`). Replies can be spoken out loud.
 |---|---|
 | `tui.py` | Rich terminal UI (entry point). Run this. |
 | `core.py` | Agent loop: model → tool calls → results → answer. Print/input-free so other front-ends can reuse `run_agent()`. |
-| `tools/` | Tool subpackage by category (`files`, `shell`, `web`, `memory`, `desktop`, `models`); `tools/__init__.py` assembles the `TOOLS` name → function dict Ollama builds schemas from. |
+| `tools/` | Tool subpackage by category (`filesystem`, `system`, `desktop`, `web`, `memory`, `reasoning`); functions use the `@tool` decorator in `tools/_common.py` and `tools/__init__.py` auto-assembles the `TOOLS` name → function dict Ollama builds schemas from. |
 | `prompt.py` | System prompt: rules, guardrails, tool list, date, stored user facts. |
 | `helper.py` | Conversation state, `history.json` persistence, `about_me.json` profile storage. |
 | `config.py` | Models, limits, file paths, search keys, TTS settings. |
@@ -59,7 +59,7 @@ local model (`ornith-1.5:9b`). Replies can be spoken out loud.
 ## Setup
 
 ```bash
-cd Naoki
+cd Wall-e
 python3 -m venv .venv && source .venv/bin/activate   # or use your own venv
 pip install -r requirements.txt                       # core + edge TTS voice
 # optional, for the offline kokoro voice:
@@ -69,7 +69,7 @@ python3 tui.py
 
 Kokoro additionally needs its model files in `./models` (see "Voice" below).
 
-Optional: for official Google results in `search_google`, fill
+Optional: for official Google results in `search_web`, fill
 `GOOGLE_API_KEY` and `GOOGLE_CSE_ID` in `config.py`. Without them it falls
 back to keyless DuckDuckGo.
 
@@ -83,38 +83,68 @@ In the TUI, just type. Useful commands:
 - `/voice` — show engine status; `/voice flite|edge|kokoro` — switch live
 - `/exit` — quit (`exit`, `quit`, Ctrl+C / Ctrl+D work too)
 
-## Tools (19)
+## Tools (14)
 
-File: `read_file`, `write_file` (backs up the original to
-`<name>.bak-YYYYMMDD-HHMMSS` before overwriting, restores it if the write
-fails), `append_to_file` (grows logs/notes without erasing), `list_directory`,
-`current_directory` ("where am I / here"), `find_files`, `file_info`,
-`copy_file` / `move_file` (both refuse to overwrite existing files),
-`make_directory`, `open_file` (opens files/folders via xdg-open).
+Filesystem (`tools/filesystem.py`): `read_file`, `save_file` (mode
+`overwrite` backs up the original to `<name>.bak-YYYYMMDD-HHMMSS` before
+overwriting and restores it if the write fails; mode `append` grows
+logs/notes without erasing; parents auto-created), `inspect_path` (empty
+means the current directory -- "where am I / here"; directories list
+entries, files report size/mtime), `search_files` (recursive glob),
+`transfer_file` (action `copy`/`move`, refuses to overwrite, parents
+auto-created).
 
-Desktop: `system_info` (OS, CPU, memory, disk, uptime, session -- call it
-instead of guessing specs), `clipboard_copy` (Wayland/X11), `take_note`
-(timestamped notes to `~/notes.txt`), `run_command` (60 s timeout,
-capped output).
+System (`tools/system.py`): `host_info` (OS, CPU, memory, disk, uptime,
+session -- call it instead of guessing specs), `run_shell` (60 s timeout,
+capped output), `take_screenshot` (target `screen`/`window`/`region`,
+saves a PNG to `/tmp`, returns path + dimensions; needs spectacle, grim,
+scrot, ImageMagick, gnome-screenshot, or maim).
 
-Web: `search_wikipedia` (keyless official API), `search_google` (official
-Google API with keys, DuckDuckGo fallback without).
+Desktop (`tools/desktop.py`): `launch_file` (opens files/folders/screenshots
+via xdg-open, formerly `open_file`), `copy_to_clipboard` (Wayland/X11,
+formerly `clipboard_copy`).
 
-Memory/reasoning: `remember_user_info` (stores durable facts in
-`about_me.json` — never secrets or small talk), `delegate_to_advanced_model`
-(hard tasks go to the 9B model with a self-contained prompt; the model
-unloads right after answering via `keep_alive=0` — raise
-`ADVANCED_KEEP_ALIVE` in `config.py` if delegations get frequent).
+Web (`tools/web.py`): `search_web` (source `web` = official Google API with
+keys, DuckDuckGo fallback without; source `wikipedia` = keyless official
+API; replaces `search_google` / `search_wikipedia`, kept as deprecated
+aliases).
+
+Memory (`tools/memory.py`): `remember_fact` (stores durable facts in
+`about_me.json` — never secrets or small talk; formerly
+`remember_user_info`), `save_note` (timestamped notes to `~/notes.txt`;
+formerly `take_note`).
+
+Reasoning (`tools/reasoning.py`): `ask_expert` (hard tasks go to the 9B
+model with a self-contained prompt; the model unloads right after answering
+via `keep_alive=0` — raise `ADVANCED_KEEP_ALIVE` in `config.py` if
+delegations get frequent; formerly `delegate_to_advanced_model`).
+
+Screenshot vision note: the bundled text models (`qwen3:1.7b`,
+`ornith-1.5:9b`, `llama3.2:1b`) reject image payloads, so `take_screenshot`
+returns path + metadata and `core.py` attaches pixels opportunistically
+(text fallback on 400 multimodal errors). Pull a vision model
+(e.g. `ollama pull qwen2.5vl`) and set it as `PRIMARY_MODEL` for the model
+to actually see screenshots.
 
 Complex work (code, file content) is always drafted by the advanced model
-first, then saved with `write_file` — this is enforced in the system prompt.
+first, then saved with `save_file` — this is enforced in the system prompt.
+
+Rename map (old → new): `write_file`+`append_to_file` → `save_file`,
+`list_directory`+`file_info`+`current_directory` → `inspect_path`,
+`find_files` → `search_files`, `copy_file`/`move_file` → `transfer_file`,
+`make_directory` → dropped (auto-created), `run_command` → `run_shell`,
+`system_info` → `host_info`, `open_file` → `launch_file`,
+`clipboard_copy` → `copy_to_clipboard`, `take_note` → `save_note`,
+`remember_user_info` → `remember_fact`, `search_google`/`search_wikipedia`
+→ `search_web`, `delegate_to_advanced_model` → `ask_expert`. Run `/clear`
+after upgrading: old `history.json` tool calls use retired names.
 
 ## Memory files
 
 - `history.json` — full conversation log, saved every turn, restored on
   startup. Thinking traces are stripped before saving.
 - `about_me.json` — durable user facts, written **only** by the
-  `remember_user_info` tool and injected into the system prompt each turn.
+  `remember_fact` tool and injected into the system prompt each turn.
   Created on first real use; delete either file to reset it.
 
 ## Voice

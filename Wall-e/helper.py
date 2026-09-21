@@ -2,7 +2,7 @@ import json
 
 from config import ABOUT_ME_FILE, HISTORY_FILE
 
-# Shared conversation state for the Naoki agent. core.py imports this list
+# Shared conversation state for the Wall-e agent. core.py imports this list
 # object and only ever mutates it in place, so both modules stay in sync.
 conversation = []
 
@@ -18,8 +18,11 @@ def _message_to_dict(message) -> dict:
     if hasattr(message, "model_dump"):
         data = message.model_dump(exclude_none=True)
         data.pop("thinking", None)  # never persist thinking traces
+        data.pop("images", None)  # screenshots live in /tmp; path stays in text
         return data
-    return dict(message)
+    data = dict(message)
+    data.pop("images", None)
+    return data
 
 
 def save_history() -> None:
@@ -47,7 +50,7 @@ def load_history() -> None:
         conversation.extend(data)
 
 
-# User profile (about_me.json): written only by the remember_user_info tool.
+# User profile (about_me.json): written only by the remember_fact tool.
 
 
 def load_user_info() -> list[str]:

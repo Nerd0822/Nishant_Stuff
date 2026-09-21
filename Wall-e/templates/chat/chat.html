@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}
+  Wall-e — {{ conversation.title|truncatechars:40 }}
+{% endblock %}
+
+{% block content %}
+  <div class="chat-container" data-conversation-id="{{ conversation.id }}">
+    <!-- Messages -->
+    <div class="messages" id="messages-container">
+      {% if messages %}
+        {% for message in messages %}
+          {% include 'chat/_message.html' with message=message %}
+        {% endfor %}
+      {% else %}
+        <div class="empty-chat">
+          <div class="empty-chat-logo">🤖</div>
+          <p>Hi! I'm Wall-e, your local AI assistant. How can I help you today?</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Typing indicator (hidden by default, shown via JS) -->
+    <div class="typing-indicator" id="typing-indicator">
+      <div class="message assistant">
+        <div class="avatar">🤖</div>
+        <div class="message-content">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message input -->
+    <form class="message-form" id="message-form" method="post" action="{% url 'chat:send_message' conversation.pk %}" autocomplete="off">
+      {% csrf_token %}
+      <textarea name="message" id="message-input" rows="1" placeholder="Ask Wall-e anything..." maxlength="4000" required></textarea>
+      <button type="submit" class="send-btn" id="send-btn" disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
+    </form>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    // Pass conversation ID to the JS module
+    window.WALL_E_CONFIG = {
+        conversationId: {{ conversation.id }},
+        csrfToken: document.querySelector('meta[name="csrf-token"]').content,
+    };
+</script>
+{% endblock %}

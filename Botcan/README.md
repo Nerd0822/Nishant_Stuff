@@ -60,6 +60,21 @@ output/
 └── demo_results.json      # All extracted data in JSON format
 ```
 
+## MCP server (for Naoki)
+
+`mcp_server.py` exposes Botcan over the MCP stdio protocol so Naoki can
+call it as tools (`botcan_scrape`, `botcan_run_recipe`,
+`botcan_screenshot`). No daemon needed -- clients spawn it per call:
+
+```bash
+../ml_shit/bin/python mcp_server.py
+```
+
+Needs this venv's `playwright` + `mcp` packages and a headless Firefox
+(`../ml_shit/bin/python -m playwright install firefox`). First run
+downloads the browser; the server itself is stateless (fresh browser
+per tool call, always closed).
+
 ## Supported Actions Reference
 
 ```yaml
