@@ -228,3 +228,5 @@ dataset/
 models/
 # Naoki models (large binary files - not for version control)
 Naoki/models/
+# wall_e voice weights: kokoro-v1.0.onnx + voices-v1.0.bin (~354MB, local only)
+wall_e/models/

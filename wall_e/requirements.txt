@@ -1,0 +1,9 @@
+# wall_e runtime -- core + Kokoro voice. Everything runs locally; Ollama serves
+# the LLMs, kokoro-onnx speaks. Install into the shared venv from the repo root:
+#   uv pip install --python ml_shit/bin/python -r wall_e/requirements.txt
+ollama==0.6.2
+rich==15.0.0
+kokoro-onnx==0.6.1
+soundfile==0.14.0
+sounddevice==0.5.6
+numpy==2.5.3

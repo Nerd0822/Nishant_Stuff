@@ -1,5 +1,0 @@
-{# Partial: a single message bubble — used inside chat.html #}
-<div class="message {{ message.role }}" id="msg-{{ message.id }}">
-    <div class="avatar">{% if message.role == 'assistant' %}🤖{% else %}👤{% endif %}</div>
-    <div class="message-content">{{ message.content|linebreaksbr }}</div>
-</div>
