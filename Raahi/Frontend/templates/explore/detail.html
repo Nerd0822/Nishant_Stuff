@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title }} - Raahi{% endblock %}
+
+{% block links %}
+<meta property="og:title" content="{{ post.title }} - Raahi">
+<meta property="og:description" content="{{ post.content|truncatewords:30 }}">
+<meta property="og:type" content="article">
+{% if post.image %}
+<meta property="og:image" content="{{ request.build_absolute_uri }}{{ post.image.url }}">
+{% endif %}
+{% endblock %}
+
+{% block main %}
+<article class="post-card post-detail">
+    <div class="post-header">
+        <a href="{% url 'profile' post.user.username %}"><strong>{{ post.user.username }}</strong></a>
+        <span class="post-date">{{ post.created_at|date:"M d, Y" }}</span>
+    </div>
+    <h1>{{ post.title }}</h1>
+    {% if post.location_name %}
+        <p class="post-location">{% include "icons/pin.html" %} {{ post.location_name }}</p>
+    {% endif %}
+    <p>{{ post.content|linebreaksbr }}</p>
+    {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image">
+    {% endif %}
+    <div class="post-actions">
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'toggle_like' post.id %}" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" class="like-btn">{% include "icons/heart.html" %} {{ post.likes.count }}</button>
+        </form>
+        {% else %}
+        <span class="like-btn like-btn--static">{% include "icons/heart.html" %} {{ post.likes.count }}</span>
+        {% endif %}
+        <span class="share-row">
+            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ post.title|urlencode }}" target="_blank" rel="noopener" title="Share on X">{% include "icons/x.html" %}</a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener" title="Share on Facebook">{% include "icons/facebook.html" %}</a>
+            <a href="https://api.whatsapp.com/send?text={{ post.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener" title="Share on WhatsApp">{% include "icons/phone.html" %}</a>
+        </span>
+    </div>
+</article>
+
+<section id="comments" class="comments">
+    <h2>Comments ({{ post.comments.count }})</h2>
+    {% for comment in post.comments.all %}
+    <div class="comment">
+        <a href="{% url 'profile' comment.user.username %}"><strong>{{ comment.user.username }}</strong></a>
+        <span class="post-date">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+        <p>{{ comment.content }}</p>
+    </div>
+    {% empty %}
+    <p class="muted">No comments yet.</p>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'add_comment' post.id %}" class="comment-form">
+        {% csrf_token %}
+        {{ comment_form.content }}
+        <button type="submit" class="auth-submit">Comment</button>
+    </form>
+    {% else %}
+    <p class="muted"><a href="{% url 'login' %}">Log in</a> to join the conversation.</p>
+    {% endif %}
+</section>
+
+<p><a href="{% url 'explore' %}">&larr; Back to explore</a></p>
+{% endblock %}

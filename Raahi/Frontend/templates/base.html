@@ -1,206 +1,119 @@
-{% load static %}
+{% load static django_htmx %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Raahi — Your adventure companion for road trips across India. Discover routes, plan itineraries, explore the open road.">
+    <title>{% block title %}Raahi{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/home.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/map.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,700&display=swap" rel="stylesheet">
 
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {# Animate.css (vendored) #}
+    <link rel="stylesheet" href="{% static 'vendor/animatecss/animate.min.css' %}">
 
-    <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}" />
-    <title>Raahi - your smart travel assistant</title>
-    {% block style %}
-    {% endblock %}
-  </head>
+    {# Block to add individual <link> tags or external stylesheets per page #}
+    {% block links %}{% endblock %}
 
-  <body hx-headers="{&quot;X-CSRFToken&quot;: &quot;{{ csrf_token }}&quot;}"> 
-    <!-- Preloader -->
-    <div class="preloader" id="preloader">
-      <div class="preloader-inner">
-        <div class="preloader-compass">
-          <i class="fa-solid fa-compass"></i>
-        </div>
-        <div class="preloader-text">
-          <span class="preloader-brand">Raahi</span>
-          <span class="preloader-sub">Preparing your journey...</span>
-        </div>
-        <div class="preloader-bar">
-          <div class="preloader-bar-fill"></div>
-        </div>
-      </div>
-    </div>
+    {# Block to add page-specific inline CSS or <style> tags #}
+    {% block style %}{% endblock %}
 
-    <!-- Toast Notification Container (Alpine for JS-triggered toasts) -->
-    <div x-data="{ toasts: [] }"
-         x-init="window.__toasts = toasts"
-         class="toast-container"
-         id="toastContainerAlpine">
-      <template x-for="(t, i) in toasts" :key="i">
-        <div class="toast"
-             :class="'toast-' + t.type"
-             x-show="t.visible"
-             x-transition:leave="toast-out"
-             @click="t.visible = false">
-          <div class="toast-icon"><i :class="t.icon"></i></div>
-          <div class="toast-content">
-            <span class="toast-title" x-text="t.title"></span>
-            <span class="toast-message" x-text="t.message" x-show="t.message"></span>
-          </div>
-          <button class="toast-close" @click="t.visible = false">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-      </template>
-    </div>
+    {# Anime.js (vendored) #}
+    <script src="{% static 'vendor/animejs/anime.min.js' %}"></script>
 
-    <!-- Toast Container for HTMX-appended toasts (server-rendered) -->
-    <div class="toast-container" id="toastContainer"></div>
+    {# FormKit Auto-Animate (bundled pure vanilla JS, exposes window.autoAnimate) #}
+    <script src="{% static 'js/vendor-auto-animate.js' %}"></script>
 
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-brand">
-        <div class="logo">
-          <i class="fa-solid fa-compass animate-compass"></i>
-        </div>
-        <div class="brand">
-          <h1>Raahi</h1>
-          <p>AI Tour Guide & Planner</p>
-        </div>
-      </div>
+    {# htmx (vendored) #}
+    <script src="{% static 'vendor/htmx/htmx.min.js' %}"></script>
 
-      <nav class="sidebar-nav">
-        <a href="{% url 'home' %}" class="sidebar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-          <i class="fa-solid fa-house"></i>
-          <span>Home</span>
-        </a>
-        <a href="{% url 'go_map' %}" class="sidebar-link {% if request.resolver_match.url_name == 'go_map' %}active{% endif %}">
-          <i class="fa-solid fa-map-location-dot"></i>
-          <span>Destinations</span>
-        </a>
-        <a href="{% url 'support' %}" class="sidebar-link {% if request.resolver_match.url_name == 'support' %}active{% endif %}">
-          <i class="fa-solid fa-headset"></i>
-          <span>Support</span>
-        </a>
+    {# Alpine.js (vendored, deferred so it starts after parsing) #}
+    <script defer src="{% static 'vendor/alpinejs/cdn.min.js' %}"></script>
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-boost="true">
 
-        {% if user.is_authenticated %}
-          <div class="sidebar-divider"></div>
-          <a href="{% url 'profile' %}" class="sidebar-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
-            <i class="fa-solid fa-user"></i>
-            <span>{{ user.username }}</span>
-          </a>
-          <a href="{% url 'logout' %}" class="sidebar-link">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>Log Out</span>
-          </a>
-        {% else %}
-          <div class="sidebar-divider"></div>
-          <a href="{% url 'login' %}" class="sidebar-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}">
-            <i class="fa-solid fa-right-to-bracket"></i>
-            <span>Log In</span>
-          </a>
-          <a href="{% url 'register' %}" class="sidebar-link {% if request.resolver_match.url_name == 'register' %}active{% endif %}">
-            <i class="fa-solid fa-user-plus"></i>
-            <span>Register</span>
-          </a>
-        {% endif %}
-      </nav>
-
-      <div class="sidebar-footer">
-        <a href="#" class="live-mode-btn"><span class="live-pulse"></span><span>Live Mode</span></a>
-      </div>
-    </aside>
-
-    <button class="sidebar-edge-toggle" id="sidebarCollapseBtn" onclick="toggleDesktopSidebar()"><i class="fa-solid fa-chevron-left" id="sidebarCollapseIcon"></i></button>
-
-    <!-- Mobile top bar -->
-    <header class="mobile-topbar">
-      <div class="mobile-nav-left">
-        <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-        <div class="mobile-brand">
-          <div class="logo logo-sm">
-            <i class="fa-solid fa-compass animate-compass"></i>
-          </div>
-          <span>Raahi</span>
-        </div>
-      </div>
+    <header>
+        <nav>
+            <a href="{% url 'home' %}" class="nav-brand" aria-label="Raahi Home">
+                {% include "icons/compass.html" %}
+                Raahi
+            </a>
+            <div class="nav-links">
+                <a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">Home</a>
+                <a href="{% url 'map' %}" hx-boost="false" class="{% if request.path == '/map/' %}active{% endif %}">Map</a>
+                <a href="{% url 'explore' %}" class="{% if request.path|slice:':9' == '/explore/' %}active{% endif %}">Explore</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' user.username %}" class="{% if request.path == '/accounts/'|add:user.username|add:'/' %}active{% endif %}">Profile</a>
+                    <form method="post" action="{% url 'logout' %}" class="nav-logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-btn">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="{% if request.path == '/accounts/login/' %}active{% endif %}">Log In</a>
+                    <a href="{% url 'register' %}" class="{% if request.path == '/accounts/register/' %}active{% endif %}">Sign Up</a>
+                {% endif %}
+            </div>
+            <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                <span class="theme-toggle-icon theme-toggle--sun" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </span>
+                <span class="theme-toggle-icon theme-toggle--moon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </span>
+            </button>
+        </nav>
     </header>
 
-    <!-- Overlay for mobile sidebar -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-
-    <!-- Main Content wrapper -->
-    <main class="main-content">
-      {% block hero %}
-      {% endblock %}
-      {% block map %}
-      {% endblock %}
+    <main>
+        {% block main %}
+        {% endblock %}
     </main>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
-    <script src="{% static 'js/map.js' %}"></script>
-
+    {# Block to add page-specific scripts or <script> tags #}
+    {% block script %}{% endblock %}
     <script>
-      /* Sidebar toggle */
-      function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('open')
-        document.getElementById('sidebarOverlay').classList.toggle('visible')
-      }
-      
-      function toggleDesktopSidebar() {
-        const sidebar = document.getElementById('sidebar')
-        const icon = document.getElementById('sidebarCollapseIcon')
-        sidebar.classList.toggle('collapsed')
-        icon.className = sidebar.classList.contains('collapsed') ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-left'
-      }
-      
-      /* Preloader dismiss */
-      window.addEventListener('load', () => {
-        const loader = document.getElementById('preloader')
-        if (loader) {
-          setTimeout(() => {
-            loader.classList.add('loaded')
-            setTimeout(() => loader.remove(), 500)
-          }, 400)
-        }
-      })
-      
-      /* Scroll-triggered fade-in for elements with [data-animate] */
-      const observerOptions = { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-      const animObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry, i) => {
-          if (entry.isIntersecting) {
-            const delay = entry.target.dataset.delay || i * 80
-            setTimeout(() => entry.target.classList.add('in-view'), delay)
-            animObserver.unobserve(entry.target)
-          }
-        })
-      }, observerOptions)
-      
-      document.querySelectorAll('[data-animate]').forEach((el) => animObserver.observe(el))
-      
-      /* Active sidebar link highlight */
-      document.querySelectorAll('.sidebar-link').forEach((link) => {
-        if (link.pathname === window.location.pathname) {
-          link.classList.add('active')
-        }
-      })
+        (function () {
+            var root = document.documentElement;
+            var toggle = document.getElementById('theme-toggle');
+            if (!toggle) return;
 
-      document.body.addEventListener('htmx:configRequest', (e) => {
-        e.detail.headers['X-CSRFToken'] = '{{ csrf_token|escapejs }}';
-    });
-    
+            // Determine initial theme: saved preference or system preference
+            function getPreferredTheme() {
+                var saved = localStorage.getItem('raahi-theme');
+                if (saved) return saved;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            function applyTheme(theme) {
+                root.setAttribute('data-theme', theme);
+                localStorage.setItem('raahi-theme', theme);
+            }
+
+            applyTheme(getPreferredTheme());
+
+            toggle.addEventListener('click', function () {
+                var current = root.getAttribute('data-theme') || 'light';
+                applyTheme(current === 'dark' ? 'light' : 'dark');
+            });
+        })();
     </script>
-  </body>
+</body>
 </html>
+
+

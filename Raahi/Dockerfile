@@ -1,26 +1,24 @@
 FROM python:3.14-slim
 
-WORKDIR /Raahi
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+WORKDIR /app
 
 COPY requirements.txt .
-
-RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN useradd -m -u 1000 Raahi_dev
-
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Create staticfiles directory and set proper ownership before USER switch
-RUN mkdir -p /Raahi/staticfiles && chown -R Raahi_dev:Raahi_dev /Raahi
-
-USER Raahi_dev
-
-COPY . .
+COPY Backend/ .
+COPY Frontend/ ./Frontend/
+COPY entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["/entrypoint.sh"]
+# All startup logic lives in ./entrypoint.sh (migrate + collectstatic
+# for the primary instance, gunicorn or celery per role). Compose services
+# just pass a short role like ["web", "--migrate"]. Gunicorn is the process
+# manager, uvicorn workers serve the async ASGI app.
+# DEBUG=False is set in docker-compose.yml for container runs.
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["web"]

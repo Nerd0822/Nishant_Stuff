@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Register - Raahi{% endblock %}
+
+{% block main %}
+<div class="auth-container">
+    <h1>Join Raahi</h1>
+    <p class="auth-subtitle">Start your road-trip journey.</p>
+    <form method="post" class="auth-form" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <p class="form-message error">{{ error }}</p>
+            {% endfor %}
+        {% endif %}
+        {% for field in form %}
+        <div class="form-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+                <small class="help-text">{{ field.help_text }}</small>
+            {% endif %}
+            {% if field.errors %}
+                {% for error in field.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="auth-submit">Create Account</button>
+    </form>
+    <p class="auth-switch">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+</div>
+{% endblock %}

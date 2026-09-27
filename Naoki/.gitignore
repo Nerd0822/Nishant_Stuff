@@ -1,0 +1,17 @@
+# Models and data (large, regenerable, or private)
+assets/
+chroma_chats.db/
+tts/
+chats.jsonl
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Tooling
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/

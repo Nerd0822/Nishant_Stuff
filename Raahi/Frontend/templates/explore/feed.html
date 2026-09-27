@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Explore - Raahi{% endblock %}
+
+{% block main %}
+<div class="explore-header">
+    <div>
+        <h1>Explore</h1>
+        <p class="muted">Discover what other travelers are sharing.</p>
+    </div>
+    {% if user.is_authenticated %}
+        <a href="{% url 'create_post' %}" class="auth-submit explore-cta">Share your experience</a>
+    {% else %}
+        <a href="{% url 'login' %}" class="auth-submit explore-cta">Log in to share</a>
+    {% endif %}
+</div>
+
+<div class="feed">
+    {% for post in posts %}
+    <article class="post-card">
+        <div class="post-header">
+            <a href="{% url 'profile' post.user.username %}"><strong>{{ post.user.username }}</strong></a>
+            <span class="post-date">{{ post.created_at|date:"M d, Y" }}</span>
+        </div>
+        <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+        {% if post.location_name %}
+            <p class="post-location">{% include "icons/pin.html" %} {{ post.location_name }}</p>
+        {% endif %}
+        <p>{{ post.content|truncatewords:40 }}</p>
+        {% if post.image %}
+            <a href="{{ post.get_absolute_url }}"><img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image" loading="lazy"></a>
+        {% endif %}
+        <div class="post-actions">
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'toggle_like' post.id %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="like-btn">{% include "icons/heart.html" %} {{ post.likes.count }}</button>
+            </form>
+            {% else %}
+            <span class="like-btn like-btn--static">{% include "icons/heart.html" %} {{ post.likes.count }}</span>
+            {% endif %}
+            <a href="{{ post.get_absolute_url }}#comments" class="like-btn">{% include "icons/chat.html" %} {{ post.comments.count }}</a>
+            <span class="share-row">
+                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}{{ post.get_absolute_url|urlencode }}&text={{ post.title|urlencode }}" target="_blank" rel="noopener" title="Share on X">{% include "icons/x.html" %}</a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}{{ post.get_absolute_url|urlencode }}" target="_blank" rel="noopener" title="Share on Facebook">{% include "icons/facebook.html" %}</a>
+                <a href="https://api.whatsapp.com/send?text={{ post.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}{{ post.get_absolute_url|urlencode }}" target="_blank" rel="noopener" title="Share on WhatsApp">{% include "icons/phone.html" %}</a>
+            </span>
+        </div>
+    </article>
+    {% empty %}
+    <p class="muted">No posts yet. Be the first to share!</p>
+    {% endfor %}
+</div>
+{% endblock %}

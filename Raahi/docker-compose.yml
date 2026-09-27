@@ -1,99 +1,117 @@
+# Raahi stack: nginx (load balancer) -> 3 gunicorn app instances -> postgres + redis.
+# Everything runs in Docker; DEBUG=False for container runs.
+# Postgres and Redis live ONLY in Docker (named volumes). Nothing is
+# created in any system-installed postgres/redis.
+#
+# Layout this file assumes (repo root = build context):
+#   ./Backend/   -> mounted at /app          (manage.py, CORE/, accounts/, ...)
+#   ./Frontend/  -> mounted at /app/Frontend (templates/, static/)
+#   ./nginx/nginx.conf -> mounted read-only into nginx
+#   Dockerfile copies Backend/ then Frontend/ the same way.
+#
+# Config comes from the repo-root .env (single source of truth) via
+# `env_file`. The `environment` entries below are ONLY the values that
+# must differ inside Docker (service hostnames, container paths).
+#
+# Usage:
+#   docker compose up -d --build     # start everything
+#   docker compose ps                # see the 3 app instances
+#   curl -i http://localhost/        # X-Upstream header shows the instance
+
+x-app: &app
+  build:
+    context: .
+    dockerfile: Dockerfile
+  env_file:
+    - .env
+  environment:
+    # Container-only overrides (win over .env values):
+    - FRONTEND_DIR=/app/Frontend
+    - DEBUG=False
+    - POSTGRES_HOST=db
+    - POSTGRES_PORT=5432
+    - CELERY_BROKER_URL=redis://redis:6379/0
+    - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    - CACHE_URL=redis://redis:6379/1
+    - OLLAMA_BASE_URL=http://host.docker.internal:11434
+  extra_hosts:
+    # Lets containers reach Ollama running on the host.
+    - "host.docker.internal:host-gateway"
+  volumes:
+    - ./Backend:/app
+    - ./Frontend:/app/Frontend
+    # File mount: ./Backend:/app shadows the image's /app, so the
+    # entrypoint needs its own mount to be visible in dev.
+    - ./entrypoint.sh:/app/entrypoint.sh:ro
+    - staticfiles:/app/Frontend/staticfiles
+    - media:/app/media
+  depends_on:
+    redis:
+      condition: service_started
+    db:
+      condition: service_healthy
+
 services:
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # Startup behaviour lives in ./entrypoint.sh (repo root). Only raahi1
+  # gets --migrate (migrate + collectstatic); 2 and 3 just boot gunicorn
+  # so nothing races on the shared volumes.
+  raahi1:
+    <<: *app
+    command: ["web", "--migrate"]
 
-  postgres:
-    image: postgres:16
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  raahi2:
+    <<: *app
+    command: ["web"]
 
-  django_web:
-    build: .
-    restart: unless-stopped
-    command: /entrypoint.sh
-    volumes:
-      - .:/Raahi
-      - staticfiles:/Raahi/staticfiles
-    ports:
-      - "8000:8000"
-    environment:
-      - PYTHONDONTWRITEBYTECODE=1
-      - PYTHONUNBUFFERED=1
-      - DJANGO_SETTINGS_MODULE=SERVER.settings
-      - PYTHONPATH=/Raahi/Backend
-      - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=${DEBUG}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
-      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
-      - OLLAMA_URL=${OLLAMA_URL}
+  raahi3:
+    <<: *app
+    command: ["web"]
 
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  celery_worker:
-    build: .
-    command: celery -A SERVER worker --loglevel=info
-    volumes:
-      - .:/Raahi
-    environment:
-      - DJANGO_SETTINGS_MODULE=SERVER.settings
-      - PYTHONPATH=/Raahi/Backend
-      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
-      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
-      - OLLAMA_URL=${OLLAMA_URL}
-      - SECRET_KEY=${SECRET_KEY}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-    depends_on:
-      - redis
-      - postgres
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+  celery:
+    <<: *app
+    command: ["celery"]
 
   nginx:
-    image: nginx:alpine
-    restart: unless-stopped
+    image: nginx:1.27-alpine
     ports:
-      - "8001:8001"
+      - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - staticfiles:/Raahi/staticfiles
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - staticfiles:/srv/static:ro
+      - media:/srv/media:ro
     depends_on:
-      - django_web
+      - raahi1
+      - raahi2
+      - raahi3
 
+  db:
+    image: postgres:16-alpine
+    # Values interpolated from the repo-root .env (same file the app
+    # reads), so the server and the app can never drift apart.
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    # No host port mapping: the app containers reach Redis as
+    # `redis:6379` on the internal network, and the local venv uses
+    # the system Redis already listening on 127.0.0.1:6379.
+    volumes:
+      - redis_data:/data
 
 volumes:
-  pgdata:
+  postgres_data:
+  redis_data:
   staticfiles:
+  media:

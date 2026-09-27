@@ -1,162 +1,87 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block map %}
-  <div class="workspace-dashboard">
-    <!-- LEFT COLUMN: Map & Route Tools Container -->
-    <div class="dashboard-left-deck">
-      <section id="main" class="glass-panel" x-data="{ directionsOpen: false }">
-        <!-- Search Dock -->
-        <div class="tools-dock">
-          <div class="tools-group tools-search">
-            <div class="input-with-icon">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              <input type="text" id="placeInput" name="place" placeholder="Search a destination..."
-                     hx-post="/set-place/"
-                     hx-trigger="keyup changed delay:500ms"
-                     hx-target="#discoverBtn"
-                     hx-swap="outerHTML" />
-            </div>
-            <button class="btn-primary" onclick="searchPlace()"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
-            <button id="savePlaceBtn" class="btn-secondary" onclick="saveCurrentPlace()" disabled title="Search a destination first" style="opacity:0.4;pointer-events:none;">
-              <i class="fa-solid fa-bookmark"></i><span class="save-label"> Save</span>
-            </button>
-          </div>
-        </div>
+{% block title %}
+  Map - Raahi
+{% endblock %}
 
-        <!-- Directions Section -->
-        <div id="directionsSection" class="tools-dock" style="display: none;">
-          <button id="directionsBtn" class="btn-secondary" @click="directionsOpen = !directionsOpen">
-            <i class="fa-solid" :class="directionsOpen ? 'fa-xmark' : 'fa-route'"></i>
-            <span x-text="directionsOpen ? 'Hide Directions' : 'Get Directions'"></span>
-          </button>
+{% block links %}
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
 
-          <div id="routingInputs" class="tools-group tools-routing" x-show="directionsOpen" x-cloak>
-            <div class="input-with-icon">
-              <i class="fa-solid fa-location-dot"></i>
-              <input type="text" id="startLocation" placeholder="Enter starting point..." />
-            </div>
-            <div class="routing-actions">
-              <button class="btn-secondary" onclick="useCurrentLocation()" title="Use Current Location"><i class="fa-solid fa-location-crosshairs"></i></button>
-              <button class="btn-primary" onclick="handleStartLocation()"><i class="fa-solid fa-route"></i> Show Route</button>
-            </div>
-          </div>
-        </div>
+  <link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/map.css' %}" />
+  <link rel="stylesheet" href="{% static 'vendor/leaflet-routing-machine/leaflet-routing-machine.css' %}" />
+{% endblock %}
 
-        <div style="display: flex;">
-          <!-- Drive Mode Toggle -->
-          <div class="tools-dock">
-            <button id="driveModeBtn" class="btn-secondary" onclick="toggleDriveMode()"><i class="fa-solid fa-car"></i> Enable Drive Mode</button>
-          </div>
+{% block main %}
+  <div class="searchbar">
+    <form method="post" action="{% url 'search_place' %}" class="search-form" novalidate hx-post="{% url 'search_place' %}" hx-swap="none">
+      {% csrf_token %}
+      <button type="button" id="use-location" class="location-btn" data-reverse-url="{% url 'reverse_geocode' %}" title="Use my current location" aria-label="Use my location">Use my location</button>
+      {{ form.start_lat }}
+      {{ form.start_lon }}
+      {{ form.start_location }}
+      {{ form.destination }}
+      <button type="submit">Search</button>
+    </form>
+    <div id="search-messages"></div>
+    {{ form.non_field_errors }}
+    {{ form.start_location.errors }}
+    {{ form.destination.errors }}
+    {% for error in errors %}
+      <p class="form-message error">{{ error }}</p>
+    {% endfor %}
+    <p id="location-message" class="form-message" role="alert" hidden></p>
+  </div>
 
-          <!-- Generate Itinerary -->
-          <div class="tools-dock">
-            <button class="btn-plan-itinerary" id="discoverBtn" onclick="requestItinerary()"><i class="fa-solid fa-calendar-plus"></i> Generate Smart Itinerary Plan</button>
-          </div>
-        </div>
-
-        <!-- Route Info Panel -->
-        <div id="routeInfoPanel" class="route-info-panel" style="display:none;">
-          <div class="route-info-header">
-            <span><i class="fa-solid fa-route"></i> Route Details</span>
-            <button class="route-info-close" onclick="closeRoutePanel()" aria-label="Close">&times;</button>
-          </div>
-          <div class="route-info-body">
-            <div id="routeSummary" class="route-summary"></div>
-            <div id="routeInstructions" class="route-instructions"></div>
-          </div>
-        </div>
-
-        <!-- Map -->
-        <div class="map-viewport-wrapper">
-          <div id="map"></div>
-        </div>
-      </section>
+  <div class="travel-search" id="travel-search">
+    <div class="travel-tabs" role="tablist" aria-label="Nearby places">
+      <button type="button" class="travel-tab active" data-category="restaurant">{% include "icons/utensils.html" %} Restaurants</button>
+      <button type="button" class="travel-tab" data-category="hotel">{% include "icons/building.html" %} Hotels</button>
+      <button type="button" class="travel-tab" data-category="cafe">{% include "icons/coffee.html" %} Cafes</button>
+      <button type="button" class="travel-tab" data-category="fuel">{% include "icons/fuel.html" %} Fuel</button>
     </div>
+    <div id="travel-results" aria-live="polite"></div>
+  </div>
 
-    <!-- RIGHT COLUMN: AI Copilot -->
-    <div class="dashboard-right-deck">
-      <div class="chat-container glass-panel" x-data="chatState()">
-        <div class="chat-header">
-          <div class="chat-title-block">
-            <div class="chat-avatar">
-              <i class="fa-solid fa-robot"></i>
-            </div>
-            <div>
-              <h2>Raahi Copilot</h2>
-              <span class="chat-status">
-                <span class="chat-status-dot"></span>
-                Online
-              </span>
-            </div>
-          </div>
-          <div class="live-toggle">
-            <span class="toggle-label">Live Track</span>
-            <label class="switch">
-              <input type="checkbox" id="liveModeToggle" />
-              <span class="slider"></span>
-            </label>
-          </div>
+  {{ start|json_script:'start-data' }}
+  {{ destination|json_script:'destination-data' }}
+  {# Turn-by-turn and totals come from Leaflet Routing Machine's own panel #}
+  <div id="map"></div>
+
+  <section id="chatbot" x-data="{ open: false }"
+           x-effect="open && $nextTick(() => window.raahiChatOpen && window.raahiChatOpen())">
+    <button type="button" class="chat-fab animate__animated animate__pulse animate__infinite" @click="open = true" x-show="!open" aria-label="Open assistant">Assistant</button>
+
+    <div class="chat-modal" x-show="open" x-cloak @keydown.escape.window="open = false">
+      <div class="chat-modal-backdrop" @click="open = false"></div>
+      <div class="chat-modal-box animate__animated animate__zoomIn animate__faster" role="dialog" aria-modal="true" aria-label="Assistant">
+        <div class="chat-modal-header">
+          <h2>Assistant</h2>
+          <button type="button" class="chat-close" @click="open = false" aria-label="Close assistant">Close</button>
         </div>
-
-        <div class="chat-messages" id="chatMessages"
-             hx-target="this" hx-swap="beforeend">
-          <div class="message bot-bubble">
-            <div class="bot-avatar-small">
-              <i class="fa-solid fa-robot"></i>
-            </div>
-            <p>Hello! I'm monitoring your map session. Ask me to extract landmarks, calculate fuel breaks, or detail historical spots along the way.</p>
-          </div>
-        </div>
-
-        <!-- Typing indicator -->
-        <div class="typing-indicator" x-show="loading" x-cloak>
-          <div class="bot-avatar-small"><i class="fa-solid fa-robot"></i></div>
-          <div class="typing-dots"><span></span><span></span><span></span></div>
-        </div>
-
         <div class="chat-suggestions">
-          <button class="chip-btn" onclick="fetchHotels()">🏨 Hotels</button>
-          <button class="chip-btn" onclick="sendChipPrompt('Plan a full day itinerary for ' + (lastSearchedPlace || ''))">🗺️ Itinerary</button>
-          <button class="chip-btn" onclick="sendChipPrompt('What are the best restaurants in ' + (lastSearchedPlace || '') + '?')">🍽️ Eateries</button>
-          <button class="chip-btn" onclick="sendChipPrompt('What is the weather like in ' + (lastSearchedPlace || '') + '?')">🌤️ Weather</button>
+          <button type="button" class="suggestion-btn" data-suggestion="about">Tell me about this place</button>
+          <button type="button" class="suggestion-btn" data-suggestion="navigate">Navigate while driving</button>
+          <button type="button" class="suggestion-btn" data-suggestion="itinerary">Plan my itinerary</button>
         </div>
-
-        <form class="chat-input"
-              hx-post="/chat/"
-              hx-target="#chatMessages"
-              hx-swap="beforeend"
-              @submit.prevent="submitMessage($el)">
-          <input type="text" name="message" x-model="input" placeholder="Ask Raahi to optimize this journey..." />
-          <button type="submit" class="chat-submit-btn" aria-label="Send query"><i class="fa-solid fa-paper-plane"></i></button>
+        <div id="chat-messages">
+          <p class="form-message">Ask about your trip. Replies are generated locally and may take a minute.</p>
+        </div>
+        <form id="chat-form" class="chat-form" hx-boost="false"
+              data-chat-url="{% url 'chat_ask' %}"
+              data-itinerary-url="{% url 'itinerary_start' %}">
+          <input type="text" id="chat-input" placeholder="Ask something..." autocomplete="off" />
+          <button type="submit">Send</button>
         </form>
       </div>
     </div>
+  </section>
+{% endblock %}
 
-    <button class="chat-edge-toggle" id="chatCollapseBtn" onclick="toggleChat()"><i class="fa-solid fa-chevron-left" id="chatCollapseIcon"></i></button>
-  </div>
-
-<script>
-document.addEventListener('alpine:init', () => {
-  Alpine.data('chatState', () => ({
-    input: '',
-    loading: false,
-    submitMessage(el) {
-      if (!this.input.trim()) return;
-      this.loading = true;
-      // Let HTMX handle the request; after swap we hide loading
-      el.addEventListener('htmx:afterSwap', () => {
-        this.loading = false;
-        // Scroll to bottom
-        const msgs = document.getElementById('chatMessages');
-        if (msgs) msgs.scrollTop = msgs.scrollHeight;
-      }, { once: true });
-    }
-  }));
-});
-
-document.getElementById("placeInput").addEventListener("keydown", function (e) {
-  if (e.key === "Enter") searchPlace();
-});
-</script>
+{% block script %}
+  <script src="{% static 'vendor/leaflet/leaflet.js' %}"></script>
+  <script src="{% static 'vendor/leaflet-routing-machine/leaflet-routing-machine.js' %}"></script>
+  <script src="{% static 'js/map.js' %}"></script>
+  <script src="{% static 'js/chat.js' %}"></script>
 {% endblock %}

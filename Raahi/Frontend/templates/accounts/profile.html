@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}{{ profile_user.username }} - Raahi{% endblock %}
+
+{% block main %}
+<div class="profile-container">
+    <div class="profile-header">
+        {% if profile_user.avatar %}
+            <img src="{{ profile_user.avatar.url }}" alt="{{ profile_user.username }}" class="profile-avatar">
+        {% endif %}
+        <div>
+            <h1>{{ profile_user.username }}</h1>
+            <p class="travel-style">{{ profile_user.get_preferred_travel_style_display }} traveler</p>
+            {% if profile_user.bio %}
+                <p class="bio">{{ profile_user.bio }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <section class="profile-section">
+        <h2>Recent posts</h2>
+        {% if posts %}
+            <ul class="profile-list">
+            {% for post in posts %}
+                <li><a href="{{ post.get_absolute_url }}">{{ post.title }}</a> <span class="muted">— {{ post.created_at|date:"M d, Y" }}</span></li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p class="muted">No posts yet. <a href="{% url 'create_post' %}">Share your first experience</a>.</p>
+        {% endif %}
+    </section>
+
+    <section class="profile-section">
+        <h2>Search history</h2>
+        {% if search_history %}
+            <ul class="profile-list">
+            {% for s in search_history %}
+                <li>{{ s.query }} <span class="muted">— {{ s.created_at|date:"M d, Y" }}</span></li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p class="muted">No searches yet.</p>
+        {% endif %}
+    </section>
+
+    <section class="profile-section">
+        <h2>Saved locations</h2>
+        {% if saved_locations %}
+            <ul class="profile-list">
+            {% for loc in saved_locations %}
+                <li>{{ loc.name }} <span class="muted">({{ loc.lat }}, {{ loc.lon }})</span></li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p class="muted">No saved locations yet.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

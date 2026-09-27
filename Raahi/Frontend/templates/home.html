@@ -1,164 +1,141 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block hero %}
-  <!-- Hero Section -->
-  <section class="hero-showcase">
-    <div class="hero-particles" id="heroParticles"></div>
-    <div class="hero-content-box" data-animate="fade-up">
-      <div class="hero-badge">
-        <i class="fa-solid fa-sparkles"></i>
-        <span>AI-Powered Travel</span>
-      </div>
-      <h2>Your Smart Travel Companion</h2>
-      <p>Raahi helps you explore destinations with AI-powered guidance, real-time information, and personalized recommendations.</p>
-      <div class="hero-action-deck">
-        <a href="{% url 'go_map' %}" class="btn-get-started">
-          Get Started <i class="fa-solid fa-arrow-right"></i>
-        </a>
-        <a href="#features" class="btn-learn-more">
-          <i class="fa-solid fa-circle-play"></i> See How It Works
-        </a>
+{% block title %}Raahi — Adventure Awaits{% endblock %}
+
+{% block style %}
+  <style>
+    .home-hero {
+      background-image: linear-gradient(rgba(13, 27, 42, 0.55), rgba(13, 27, 42, 0.75)),
+                        url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&q=80');
+      background-size: cover;
+      background-position: center 40%;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+    [data-theme="dark"] .home-hero {
+      background-image: linear-gradient(rgba(13, 27, 42, 0.65), rgba(13, 27, 42, 0.85)),
+                        url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&q=80');
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .home-hero { background-attachment: scroll; }
+    }
+    @media (max-width: 768px) {
+      .home-hero { background-attachment: scroll; }
+    }
+  </style>
+{% endblock %}
+
+{% block main %}
+  <section class="home-hero" aria-labelledby="hero-title" data-parallax="hero">
+    <div class="hero-content">
+      <h1 id="hero-title">Raahi</h1>
+      <p class="hero-tagline">Your adventure companion for road trips across India. Discover hidden routes, plan unforgettable journeys, and let the open road surprise you.</p>
+      <a class="home-cta" href="{% url 'map' %}" aria-label="Start your journey on the map">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+        Start your journey
+      </a>
+
+      <div class="hero-stats" aria-label="Raahi statistics">
+        <div class="stat">
+          <span class="stat-value" data-count="50000">0</span>
+          <span class="stat-label">Routes explored</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" data-count="1200">0</span>
+          <span class="stat-label">Hidden gems found</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" data-count="50">0</span>
+          <span class="stat-label">Cities covered</span>
+        </div>
       </div>
     </div>
-
-    <!-- Animated Stats Strip -->
-    <div class="hero-stats-strip" data-animate="fade-up" data-delay="200">
-      <div class="hero-stat">
-        <span class="hero-stat-number" data-count="10000">0</span>
-        <span class="hero-stat-label">Travelers Served</span>
-      </div>
-      <div class="hero-stat-divider"></div>
-      <div class="hero-stat">
-        <span class="hero-stat-number" data-count="500">0</span>
-        <span class="hero-stat-label">Destinations</span>
-      </div>
-      <div class="hero-stat-divider"></div>
-      <div class="hero-stat">
-        <span class="hero-stat-number" data-count="24">0</span>
-        <span class="hero-stat-label">AI Assistant Hours</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section class="workspace-container" id="features">
-    <header class="section-meta" data-animate="fade-up">
-      <h2>How Raahi Helps You Travel Smarter</h2>
-      <p class="subtitle">Our AI-powered assistant provides everything you need for a seamless travel experience.</p>
-    </header>
-
-    <div class="feature-card-grid">
-      <div class="feature-card" data-animate="fade-up" data-delay="0">
-        <div class="card-icon-wrapper">
-          <i class="fas fa-robot"></i>
-        </div>
-        <h3>AI Tour Guide</h3>
-        <p>Get personalized recommendations and answers to all your travel questions through our intelligent chatbot.</p>
-      </div>
-
-      <div class="feature-card" data-animate="fade-up" data-delay="80">
-        <div class="card-icon-wrapper">
-          <i class="fas fa-bus"></i>
-        </div>
-        <h3>Transport Info</h3>
-        <p>Access real-time bus schedules, routes, and booking information to plan your journey efficiently.</p>
-      </div>
-
-      <div class="feature-card" data-animate="fade-up" data-delay="160">
-        <div class="card-icon-wrapper">
-          <i class="fas fa-hotel"></i>
-        </div>
-        <h3>Accommodation</h3>
-        <p>Find and compare hotels, hostels, and homestays with detailed information and reviews.</p>
-      </div>
-
-      <div class="feature-card" data-animate="fade-up" data-delay="240">
-        <div class="card-icon-wrapper">
-          <i class="fas fa-cloud-sun"></i>
-        </div>
-        <h3>Weather Info</h3>
-        <p>Get real-time weather updates and forecasts to plan your travel days better.</p>
-      </div>
-
-      <div class="feature-card" data-animate="fade-up" data-delay="320">
-        <div class="card-icon-wrapper">
-          <i class="fas fa-map-marked-alt"></i>
-        </div>
-        <h3>Maps & Navigation</h3>
-        <p>Explore interactive maps, find routes, and navigate with ease wherever you go.</p>
-      </div>
-
-      <div class="feature-card" data-animate="fade-up" data-delay="400">
-        <div class="card-icon-wrapper">
-          <i class="fas fa-landmark"></i>
-        </div>
-        <h3>Historical Insights</h3>
-        <p>Discover the rich history and cultural significance of monuments and attractions.</p>
-      </div>
+    <div class="hero-scroll-indicator" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
     </div>
   </section>
 
-  <!-- CTA Section -->
-  <section class="cta-section" data-animate="fade-scale">
-    <div class="cta-glow"></div>
-    <div class="cta-content">
-      <h2>Ready to explore?</h2>
-      <p>Start your journey with Raahi today and discover the world with AI by your side.</p>
-      <a href="{% url 'go_map' %}" class="btn-get-started">
-        <i class="fa-solid fa-compass"></i> Launch Explorer
+  <section class="features" aria-labelledby="features-title" data-scroll-reveal>
+    <div class="section-header">
+      <h2 id="features-title">Why choose Raahi</h2>
+      <p class="section-subtitle">Built for the open road, designed for adventure</p>
+    </div>
+    <div class="feature-grid">
+      <article class="feature-card card animate-fade-in-up delay-1" data-scroll-reveal>
+        <div class="feature-bg" style="background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80');"></div>
+        <div class="feature-content">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+            </svg>
+          </div>
+          <h3>Smart Routing</h3>
+          <p>Real-time navigation with scenic detours, road conditions, and local insights powered by Leaflet and OSM.</p>
+        </div>
+      </article>
+      <article class="feature-card card animate-fade-in-up delay-2" data-scroll-reveal>
+        <div class="feature-bg" style="background-image: url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80');"></div>
+        <div class="feature-content">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <h3>AI Itineraries</h3>
+          <p>Personalized day plans generated locally by Ollama — private, fast, and tailored to your style.</          </p>
+        </div>
+      </article>
+      <article class="feature-card card animate-fade-in-up delay-3" data-scroll-reveal>
+        <div class="feature-bg" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80');"></div>
+        <div class="feature-content">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <h3>Travel Assistant</h3>
+          <p>Chat with Raahi about places, get driving tips, or plan stops — all offline-first with local LLM.</p>
+        </div>
+      </article>
+      <article class="feature-card card animate-fade-in-up delay-4" data-scroll-reveal>
+        <div class="feature-bg" style="background-image: url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80');"></div>
+        <div class="feature-content">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <h3>Offline Ready</h3>
+          <p>Maps, routes, and assistant work without signal. Download regions and explore freely.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="cta-banner" aria-labelledby="cta-title" data-scroll-reveal>
+    <div class="cta-bg" style="background-image: url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1920&q=80');"></div>
+    <div class="cta-content card animate-scale-in">
+      <h2 id="cta-title">Ready to hit the road?</h2>
+      <p>Plan your next adventure in minutes. Search a destination, get a route, and let Raahi handle the details.</p>
+      <a class="btn btn-primary btn-lg" href="{% url 'map' %}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+        Open the Map
       </a>
     </div>
   </section>
+{% endblock %}
 
-  <script>
-    /* Animated stat counter */
-    function animateCounters() {
-      document.querySelectorAll('[data-count]').forEach(el => {
-        const target = parseInt(el.dataset.count);
-        const duration = 2000;
-        const start = performance.now();
-
-        function update(now) {
-          const elapsed = now - start;
-          const progress = Math.min(elapsed / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          el.textContent = Math.floor(target * eased).toLocaleString();
-          if (progress < 1) requestAnimationFrame(update);
-          else el.textContent = target.toLocaleString() + '+';
-        }
-        requestAnimationFrame(update);
-      });
-    }
-
-    /* Hero floating particles */
-    function createParticles() {
-      const container = document.getElementById('heroParticles');
-      if (!container) return;
-      for (let i = 0; i < 20; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        p.style.left = Math.random() * 100 + '%';
-        p.style.top = Math.random() * 100 + '%';
-        p.style.animationDelay = Math.random() * 8 + 's';
-        p.style.animationDuration = (6 + Math.random() * 10) + 's';
-        p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
-        container.appendChild(p);
-      }
-    }
-
-    /* Trigger counters when stats strip is visible */
-    const statsStrip = document.querySelector('.hero-stats-strip');
-    if (statsStrip) {
-      const statsObserver = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          animateCounters();
-          statsObserver.disconnect();
-        }
-      }, { threshold: 0.5 });
-      statsObserver.observe(statsStrip);
-    }
-
-    createParticles();
-  </script>
+{% block script %}
+  <script src="{% static 'js/home.js' %}"></script>
 {% endblock %}

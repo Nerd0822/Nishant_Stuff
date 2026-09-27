@@ -230,3 +230,12 @@ models/
 Naoki/models/
 # wall_e voice weights: kokoro-v1.0.onnx + voices-v1.0.bin (~354MB, local only)
 wall_e/models/
+
+# Local RAG index
+rag_tuto/.faiss_index/
+
+# Downloaded Kaggle tutorial data (keep the catalog, not large raw files)
+scikit_learn_tuto/data/
+
+# OpenCode agent skills (installed copies of upstream skills - ~650KB, not source)
+.opencode/

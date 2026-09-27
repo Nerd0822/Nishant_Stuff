@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Log In - Raahi{% endblock %}
+
+{% block main %}
+<div class="auth-container">
+    <h1>Welcome Back</h1>
+    <p class="auth-subtitle">Pick up where your last road trip left off.</p>
+    <form method="post" class="auth-form" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <p class="form-message error">{{ error }}</p>
+            {% endfor %}
+        {% endif %}
+        {% for field in form %}
+        <div class="form-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+                {% for error in field.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="auth-submit">Log In</button>
+    </form>
+    <p class="auth-switch">Don't have an account? <a href="{% url 'register' %}">Sign up</a></p>
+</div>
+{% endblock %}

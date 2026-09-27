@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Create Post - Raahi{% endblock %}
+
+{% block main %}
+<div class="create-post-container">
+    <h1>Share your experience</h1>
+    <p class="muted">Tell fellow travelers about a place, a road, or a meal worth stopping for.</p>
+    <form method="post" enctype="multipart/form-data" class="post-form" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <p class="form-message error">{{ error }}</p>
+            {% endfor %}
+        {% endif %}
+        {% for field in form %}
+        <div class="form-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+                {% for error in field.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="auth-submit">Post</button>
+    </form>
+</div>
+{% endblock %}
