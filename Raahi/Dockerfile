@@ -9,7 +9,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY Backend/ .
-COPY Frontend/ ./Frontend/
+COPY Frontend/ /Frontend/
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
@@ -21,4 +21,4 @@ EXPOSE 8000
 # manager, uvicorn workers serve the async ASGI app.
 # DEBUG=False is set in docker-compose.yml for container runs.
 ENTRYPOINT ["./entrypoint.sh"]
-CMD ["web"]
+CMD ["web","--migrate"]

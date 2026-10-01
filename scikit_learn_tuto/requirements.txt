@@ -1,4 +1,0 @@
-# The ML packages are already installed in ../ml_shit.
-# Install the Kaggle downloader with:
-# uv pip install --python ../ml_shit/bin/python kaggle
-kaggle>=1.6

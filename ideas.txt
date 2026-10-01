@@ -1,7 +1,17 @@
-# django webapp for walle with drf api
-# serving walle with fastapi
-# sckikit-learn tutorial and a major project
-# pytorch tutorial and a major project
-# langchain and langgraph in ollama.
-# huggingface tutorial 
-    
+django
+drf
+flask
+fastapi
+
+sckikit learn
+pytorch
+langchain
+langgraph
+rag
+mcp
+
+js
+react
+jwt
+auth
+user creation and registration
