@@ -77,46 +77,5 @@ per tool call, always closed).
 
 ## Supported Actions Reference
 
-```yaml
-# --- Navigation ---
-open: <url>
-close:
-
-# --- Interacting ---
-click:
-  selector: <css-selector>
-  text: <optional-text-filter>
-
-fill:
-  selector: <css-selector>
-  value: <text-to-type>
-
-select:
-  selector: <css-selector>
-  value: <option-value>
-  # label: <option-label>
-  # index: <number>
-
-hover:
-  selector: <css-selector>
-
-scroll:
-  selector: <css-selector>
-  # amount: <pixels>
-
-# --- Extracting ---
-extract:
-  selector: <css-selector>
-  # all: true
-  # first: true
-
-# --- Output ---
-screenshot:
-  path: <filepath>
-  full_page: true
-
-save:
-  path: <filepath>
-  format: json
-  # format: csv
-```
+See [`scraper_docs.md`](scraper_docs.md) — the full action reference, URL rules,
+and a minimal working recipe.

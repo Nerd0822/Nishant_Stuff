@@ -3,19 +3,13 @@ import yaml
 import os
 import json
 import csv
-
-from logger import Logger
-
-
+from pathlib import Path
 
 
 class Scraper:
     def __init__(self):
 
         self.pw = sync_playwright().start()
-        self.logger = Logger.make_logger(
-            name=self.__class__.__name__, output="Scraper/output/scraper.log"
-        )
         self.extracted_data = {}
 
     def start(self, mode: bool = False):
@@ -40,7 +34,7 @@ class Scraper:
                     )
                 recipe = yaml.safe_load(f)
         except Exception as e:
-            Logger.make_logger().error(f"Error reading recipe: {e}")
+            print(f"Error reading recipe: {e}")
             recipe = None
 
         return recipe
@@ -50,6 +44,8 @@ class Scraper:
         for key, value in recipe.items():
             match key:
                 case "open":
+                    if "://" not in str(value):
+                        value = Path(str(value)).resolve().as_uri()
                     self.page.goto(value, wait_until="networkidle")
 
                 case "close":
@@ -62,8 +58,6 @@ class Scraper:
     def execute_steps(self, steps):
         for step in steps:
             for k, v in step.items():
-                self.logger.debug(f"action = {k} - params = {v}")
-
                 locator = self.page.locator(v.get("selector", ""))
 
                 match k:
@@ -71,6 +65,45 @@ class Scraper:
                         if v.get("text"):
                             locator = locator.filter(has_text=v.get("text"))
                         locator.click()
+
+                    case "check":
+                        locator.check()
+
+                    case "uncheck":
+                        locator.uncheck()
+
+                    case "clear":
+                        locator.clear()
+
+                    case "press":
+                        if not v.get("key"):
+                            raise Exception("press needs a key")
+                        if v.get("selector"):
+                            locator.press(v.get("key"))
+                        else:
+                            self.page.keyboard.press(v.get("key"))
+
+                    case "copy_link":
+                        attr = v.get("attr", "href")
+                        link = locator.first.get_attribute(attr)
+                        self.extracted_data[v.get("key", v.get("selector"))] = link
+                        try:
+                            self.page.evaluate(
+                                "(link) => navigator.clipboard.writeText(link)", link
+                            )
+                        except Exception as e:
+                            print(f"Could not copy to clipboard: {e}")
+
+                    case "download":
+                        path = v.get("path")
+                        if not path:
+                            raise Exception("download needs a path")
+                        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+                        if v.get("text"):
+                            locator = locator.filter(has_text=v.get("text"))
+                        with self.page.expect_download() as info:
+                            locator.click()
+                        info.value.save_as(path)
 
                     case "extract":
 
@@ -137,6 +170,6 @@ class Scraper:
                             self.page.evaluate(
                                 f"window.scrollBy(0, {v.get('amount', 20)})"
                             )
-                            self.logger.warning(
+                            print(
                                 f"Scroll-into-view failed: {e}. Defaulting to scroll by amount {v.get('amount', 20)}"
                             )

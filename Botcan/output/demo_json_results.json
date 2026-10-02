@@ -1,0 +1,47 @@
+{
+  "h1.hero-title": "\n          Str\u00f6m\n          A hypercar built around one decision: that a chassis can be lighter than the law allows.\n        ",
+  "#home .feature-list li": [
+    "Dry-sumped V12 \u2014 9,000 rpm, individually finished",
+    "T700 carbon tub \u2014 cured in a single 14-hour cycle",
+    "Active aero \u2014 1,100 kg of downforce, no wing delete",
+    "Weight above the axles \u2014 53%, within a millimetre of the brief",
+    "Hand-built \u2014 412 hours per chassis"
+  ],
+  ".testimonial": "\n        Nothing else on sale feels like it was designed by people who had to be talked out of every addition.\n        K. Almeida \u2014 automotive correspondent\n      ",
+  ".product-card h3": [
+    "Str\u00f6m",
+    "Kern",
+    "Halo",
+    "Nimbus"
+  ],
+  ".price": [
+    "From \u20ac3,400,000",
+    "From \u20ac1,850,000",
+    "From \u20ac1,240,000",
+    "From \u20ac890,000"
+  ],
+  "#craft .feature-list li": [
+    "T700 carbon tub \u2014 one 14-hour cure, no joins",
+    "Hand-formed bodywork \u2014 412 hours per chassis",
+    "Finished in-house \u2014 31 layers, 9 days",
+    "Ingrid Sand \u2014 Chief Engineer, structure",
+    "Teo Marchetti \u2014 Head of Powertrain",
+    "Aya Nakamura \u2014 Lead Aerodynamicist",
+    "Ruben Okafor \u2014 Chassis & dynamics",
+    "Elif Demir \u2014 Assembly"
+  ],
+  "#journal article h3": [
+    "The fourteen-hour cure, and why we stopped trying to shorten it",
+    "1,100 kg of downforce, and the argument about the wing",
+    "Why we publish dry weight the way we do"
+  ],
+  ".hover-content": "\n              The wing moves between 0\u00b0, 8\u00b0 and 19\u00b0 in under 400 ms. Below 60 km/h\n              it stays flat so the car can be reversed in a narrow street without\n              scraping a roof.\n            ",
+  ".lazy-item": [
+    "Hand-polished clear coat \u2014 31 layers",
+    "Satin anti-reflective wrap \u2014 4 micron",
+    "Titanium mirror finish, no clear coat",
+    "Interior leather, vegetable tanned, 4 mm",
+    "Steering wheel rim in forged magnesium"
+  ],
+  "#scroll-target": "Everything below this line is fitted at Widhby"
+}

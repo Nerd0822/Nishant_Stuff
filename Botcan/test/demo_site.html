@@ -1,563 +1,1054 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo Site for Scraper Testing</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #333; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SÖLVAR — STRÖM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   SÖLVAR — tokens
+   ============================================================ */
+:root{
+  --void:#0C0D0F;
+  --graphite:#16181C;
+  --slate:#2A2E35;
+  --smoke:#9AA1AC;
+  --bone:#EDEEF0;
+  --bronze:#C08B4E;
+  --ice:#6FB3D9;
 
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 0 30px;
-            text-align: center;
-        }
-        header h1 { font-size: 2.5em; margin-bottom: 10px; }
-        header p { font-size: 1.1em; opacity: 0.9; }
+  --edge:rgba(237,238,240,.10);
+  --edge-soft:rgba(237,238,240,.05);
 
-        nav.tabs {
-            background: white;
-            border-bottom: 2px solid #e0e0e0;
-            padding: 0 20px;
-        }
-        nav.tabs ul {
-            list-style: none;
-            display: flex;
-            gap: 0;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        nav.tabs ul li a {
-            display: block;
-            padding: 14px 28px;
-            text-decoration: none;
-            color: #555;
-            font-weight: 500;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-        }
-        nav.tabs ul li a:hover,
-        nav.tabs ul li a.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
+  --display:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --wordmark:'Bodoni Moda','Didot','Times New Roman',serif;
 
-        section.page-section {
-            display: none;
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            margin-top: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        section.page-section.active {
-            display: block;
-        }
-        section.page-section h2 {
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            color: #444;
-        }
-        section.page-section h3 {
-            font-size: 1.3em;
-            margin: 20px 0 12px;
-            color: #555;
-        }
-        section.page-section p {
-            line-height: 1.7;
-            margin-bottom: 16px;
-        }
+  --rail:min(1320px,calc(100% - 96px));
+}
 
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .product-card {
-            background: #f8f9fa;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .product-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .product-card h3 { color: #667eea; margin-bottom: 8px; }
-        .product-card .price {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #e67e22;
-            margin-bottom: 8px;
-        }
-        .product-card .description { color: #666; font-size: 0.95em; }
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--void);
+  color:var(--bone);
+  font-family:var(--display);
+  font-weight:300;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+::selection{background:var(--bronze);color:var(--void)}
 
-        .feature-list {
-            list-style: none;
-            margin-top: 15px;
-        }
-        .feature-list li {
-            padding: 12px 16px;
-            border-bottom: 1px solid #eee;
-            font-size: 1.05em;
-        }
-        .feature-list li:last-child { border-bottom: none; }
-        .feature-list li::before {
-            content: "✓";
-            color: #27ae60;
-            font-weight: bold;
-            margin-right: 10px;
-        }
+/* faint vertical datum grid — CAD, not newspaper */
+.datum{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(90deg,var(--edge-soft) 1px,transparent 1px);
+  background-size:calc(100% / 12) 100%;
+}
 
-        .contact-form { max-width: 500px; margin-top: 20px; }
-        .form-group { margin-bottom: 18px; }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #555;
-        }
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 1em;
-            transition: border-color 0.2s;
-            background: white;
-        }
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        .form-group textarea { height: 100px; resize: vertical; }
-        .btn-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1em;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .btn-submit:hover { opacity: 0.9; }
+/* ============================================================
+   masthead
+   ============================================================ */
+.masthead{
+  position:sticky;top:0;z-index:60;
+  background:rgba(12,13,15,.82);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--edge);
+}
+.masthead-in{
+  width:var(--rail);margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  height:78px;gap:32px;
+  min-width:0;
+}
+.wordmark{
+  font-family:var(--wordmark);font-weight:700;
+  font-size:1.5rem;letter-spacing:.16em;
+  color:var(--bone);text-decoration:none;white-space:nowrap;
+}
+.wordmark sup{
+  font-family:var(--display);font-size:.5rem;font-weight:400;
+  letter-spacing:.3em;color:var(--bronze);vertical-align:super;margin-left:.35em;
+}
 
-        .testimonial {
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
-            padding: 18px 20px;
-            margin-bottom: 16px;
-            border-radius: 0 8px 8px 0;
-        }
-        .testimonial .author {
-            font-weight: 600;
-            color: #667eea;
-            margin-top: 8px;
-        }
+nav.tabs ul{
+  list-style:none;display:flex;align-items:center;gap:34px;
+}
+nav.tabs a{
+  position:relative;
+  font-size:.78rem;font-weight:400;letter-spacing:.06em;
+  color:var(--smoke);text-decoration:none;
+  padding:29px 0 27px;
+  transition:color .25s ease;
+}
+nav.tabs a::after{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:var(--bronze);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .32s cubic-bezier(.22,.61,.36,1);
+}
+nav.tabs a:hover{color:var(--bone)}
+nav.tabs a.active{color:var(--bone)}
+nav.tabs a.active::after{transform:scaleX(1)}
 
-        .article-meta {
-            color: #888;
-            font-size: 0.9em;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 12px;
-        }
+.head-cta{
+  font-size:.74rem;letter-spacing:.08em;color:var(--void);
+  background:var(--bronze);text-decoration:none;
+  padding:11px 20px;white-space:nowrap;
+  transition:background .25s ease;
+}
+.head-cta:hover{background:#D09E5E}
 
-        footer {
-            text-align: center;
-            padding: 30px 0;
-            color: #888;
-            font-size: 0.9em;
-        }
+a:focus-visible,button:focus-visible,input:focus-visible,
+select:focus-visible,textarea:focus-visible,summary:focus-visible{
+  outline:2px solid var(--bronze);outline-offset:3px;
+}
 
-        .hover-card {
-            background: #f8f9fa;
-            border: 2px dashed #667eea;
-            border-radius: 8px;
-            padding: 30px;
-            text-align: center;
-            margin: 20px 0;
-            position: relative;
-        }
-        .hover-trigger {
-            background: #667eea;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
-            display: inline-block;
-            cursor: default;
-            font-weight: 600;
-        }
-        .hover-content {
-            display: none;
-            margin-top: 16px;
-            padding: 16px;
-            background: #e8f4fd;
-            border-radius: 6px;
-            color: #2c3e50;
-            font-weight: 500;
-        }
-        .hover-card:hover .hover-content {
-            display: block;
-        }
+/* ============================================================
+   page sections
+   ============================================================ */
+main{position:relative;z-index:1}
+.page-section{display:none}
+.page-section.active{display:block;animation:panelIn .5s cubic-bezier(.22,.61,.36,1)}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-        .lazy-section {
-            margin: 20px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .lazy-item {
-            display: none;
-            padding: 16px;
-            margin: 10px 0;
-            background: #e8f4fd;
-            border-radius: 6px;
-            font-weight: 500;
-        }
-        .lazy-item.visible {
-            display: block;
-        }
-        .btn-load {
-            background: #27ae60;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1em;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .btn-load:hover { opacity: 0.9; }
+.section-in{width:var(--rail);margin:0 auto;padding:120px 0}
 
-        .secret-box {
-            display: inline-block;
-            padding: 20px 30px;
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-size: 1.1em;
-            font-weight: 600;
-        }
+h2.section-head{
+  font-size:clamp(2.1rem,4.4vw,3.5rem);
+  font-weight:600;letter-spacing:-.03em;line-height:1.06;
+  max-width:16ch;
+}
+h2.section-head em{
+  font-style:normal;color:var(--smoke);font-weight:300;
+}
+.section-lede{
+  margin-top:26px;max-width:60ch;
+  color:var(--smoke);font-size:1.02rem;
+}
 
-        .scroll-container {
-            height: 800px;
-            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            overflow-y: auto;
-            border: 1px solid #dee2e6;
-        }
-        .scroll-container p {
-            margin-bottom: 40px;
-        }
-        #scroll-target {
-            background: #d4edda;
-            border: 2px solid #28a745;
-            border-radius: 8px;
-            padding: 30px;
-            text-align: center;
-            font-size: 1.2em;
-            font-weight: 600;
-            color: #155724;
-        }
+/* ============================================================
+   hero
+   ============================================================ */
+#home{padding-top:0}
+.hero{
+  position:relative;
+  width:var(--rail);margin:0 auto;
+  padding:64px 0 0;
+}
+.hero-top{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:48px;flex-wrap:wrap;
+}
+.hero-title{
+  font-size:clamp(4.2rem,13vw,11rem);
+  font-weight:700;letter-spacing:-.045em;line-height:.84;
+  text-transform:uppercase;
+}
+.hero-title .thin{
+  display:block;font-weight:300;letter-spacing:0;
+  color:var(--smoke);font-size:clamp(1.02rem,1.35vw,1.22rem);
+  line-height:1.62;margin-top:26px;max-width:34ch;
+}
+.hero-aside{
+  padding-bottom:14px;max-width:34ch;
+  color:var(--smoke);font-size:.94rem;
+}
+.hero-aside .build{
+  display:block;margin-top:20px;color:var(--ice);
+  font-variant-numeric:tabular-nums;letter-spacing:.02em;
+}
 
-        .code-block {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 16px 20px;
-            border-radius: 6px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
-            margin: 10px 0;
-        }
-    </style>
+.stage{
+  position:relative;margin-top:-1.2vw;
+  min-height:clamp(230px,27vw,380px);
+  overflow:hidden; /* the light sweep travels outside the stage */
+}
+.stage svg{width:100%;height:auto;display:block;overflow:visible}
+.stage-glow{
+  position:absolute;left:50%;top:46%;translate:-50% -50%;
+  width:74%;height:74%;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(192,139,78,.20),transparent 66%);
+  filter:blur(14px);
+}
+.pool{
+  position:absolute;left:50%;bottom:6%;translate:-50% 0;
+  width:70%;height:70px;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(237,238,240,.10),transparent 70%);
+  filter:blur(9px);
+}
+/* one orchestrated moment: light crosses the bodywork once */
+.sweep{
+  position:absolute;inset:0;pointer-events:none;
+  mix-blend-mode:screen;
+  background:linear-gradient(104deg,transparent 38%,rgba(255,255,255,.30) 50%,transparent 62%);
+  translate:-120% 0;
+  animation:sweepAcross 2.4s cubic-bezier(.4,0,.2,1) .35s 1 both;
+}
+@keyframes sweepAcross{to{translate:120% 0}}
+
+/* spec strip — real telemetry, so numbers are the design */
+.specs{
+  width:var(--rail);margin:0 auto;
+  border-top:1px solid var(--edge);
+  border-bottom:1px solid var(--edge);
+  display:grid;grid-template-columns:repeat(4,1fr);
+}
+.specs div{
+  padding:26px 30px 28px;
+  border-left:1px solid var(--edge-soft);
+}
+.specs div:first-child{border-left:0;padding-left:0}
+.specs dt{
+  font-size:.7rem;letter-spacing:.14em;color:var(--smoke);
+  margin-bottom:9px;
+}
+.specs dd{
+  font-size:clamp(1.5rem,2.7vw,2.15rem);
+  font-weight:600;letter-spacing:-.02em;color:var(--ice);
+  font-variant-numeric:tabular-nums;line-height:1;
+}
+
+/* pull quote */
+.testimonial{
+  margin-top:96px;padding:44px 0 44px 40px;
+  border-left:1px solid var(--bronze);
+  max-width:64ch;
+}
+.testimonial p{
+  font-size:clamp(1.15rem,2vw,1.5rem);font-weight:300;
+  line-height:1.42;letter-spacing:-.01em;
+}
+.testimonial .author{
+  margin-top:22px;color:var(--smoke);font-size:.82rem;letter-spacing:.06em;
+}
+
+/* attributes list */
+.split{
+  display:grid;grid-template-columns:.85fr 1.15fr;
+  gap:80px;align-items:start;margin-top:96px;
+}
+.feature-list{list-style:none;margin-top:38px;border-top:1px solid var(--edge)}
+.feature-list li{
+  position:relative;padding:22px 0 22px 34px;
+  border-bottom:1px solid var(--edge-soft);
+  font-size:1rem;color:var(--bone);
+}
+.feature-list li::before{
+  content:'';position:absolute;left:0;top:31px;
+  width:16px;height:1px;background:var(--bronze);
+}
+.feature-list li strong{font-weight:600}
+.feature-list li span{color:var(--smoke)}
+
+/* ============================================================
+   lineup — editorial rail, no card kit
+   ============================================================ */
+.lineup{margin-top:70px;border-top:1px solid var(--edge)}
+.product-card{
+  display:grid;
+  grid-template-columns:minmax(210px,.8fr) 1.5fr;
+  gap:clamp(28px,5vw,80px);
+  align-items:center;
+  padding:52px 0;
+  border-bottom:1px solid var(--edge);
+  transition:background .4s ease;
+}
+.product-card:hover{background:linear-gradient(90deg,rgba(237,238,240,.035),transparent 62%)}
+.product-card h3{
+  font-size:clamp(1.7rem,3.4vw,2.7rem);
+  font-weight:600;letter-spacing:-.03em;line-height:1;
+  text-transform:uppercase;
+}
+.product-card .car-art{transition:--paint .45s ease}
+.product-card:hover .car-art{--paint:#5A636F}
+.product-card .car-art svg{width:100%;height:auto;display:block;overflow:visible}
+.product-card .car-art .wheel{fill:#0E1013;stroke:#3E444E;stroke-width:2}
+.product-card .car-art .hub{fill:#2A2E35}
+.product-body .price{
+  font-size:1.32rem;font-weight:500;color:var(--bronze);
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;margin-top:16px;
+}
+.product-body .description{
+  margin-top:14px;color:var(--smoke);max-width:52ch;font-size:.97rem;
+}
+.spec-inline{
+  display:flex;gap:34px;flex-wrap:wrap;margin-top:22px;
+  padding-top:18px;border-top:1px solid var(--edge-soft);
+}
+.spec-inline span{
+  font-size:.78rem;color:var(--smoke);letter-spacing:.04em;
+}
+.spec-inline b{
+  color:var(--ice);font-weight:600;font-variant-numeric:tabular-nums;
+  margin-right:.35em;
+}
+
+/* ============================================================
+   commission form
+   ============================================================ */
+.form-shell{display:grid;grid-template-columns:1fr 1.1fr;gap:80px;margin-top:60px}
+.contact-form{max-width:520px}
+.form-group{margin-bottom:26px}
+.form-group label{
+  display:block;font-size:.74rem;letter-spacing:.12em;
+  color:var(--smoke);margin-bottom:9px;
+}
+.form-group input[type=text],
+.form-group input[type=email],
+.form-group select,
+.form-group textarea{
+  width:100%;padding:14px 2px;
+  background:transparent;border:0;border-bottom:1px solid var(--slate);
+  color:var(--bone);font-family:inherit;font-size:1rem;font-weight:300;
+  transition:border-color .25s ease;
+}
+.form-group textarea{height:112px;resize:vertical}
+.form-group select{cursor:pointer}
+.form-group select option{background:var(--graphite);color:var(--bone)}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{border-bottom-color:var(--bronze);outline:none}
+
+.check-row{
+  display:flex;align-items:flex-start;gap:13px;margin-bottom:30px;
+}
+.check-row input{
+  appearance:none;-webkit-appearance:none;
+  width:17px;height:17px;flex:none;margin-top:2px;
+  border:1px solid var(--slate);background:transparent;
+  cursor:pointer;position:relative;transition:border-color .2s ease;
+}
+.check-row input:checked{border-color:var(--bronze)}
+.check-row input:checked::after{
+  content:'';position:absolute;left:5px;top:1px;
+  width:5px;height:10px;
+  border:solid var(--bronze);border-width:0 1.5px 1.5px 0;
+  rotate:45deg;
+}
+.check-row label{font-size:.86rem;color:var(--smoke);cursor:pointer;letter-spacing:0}
+
+.btn{
+  appearance:none;border:0;cursor:pointer;
+  background:var(--bronze);color:var(--void);
+  font-family:inherit;font-size:.8rem;letter-spacing:.1em;
+  padding:16px 34px;transition:background .25s ease;
+}
+.btn:hover{background:#D09E5E}
+.btn[disabled]{background:var(--slate);color:var(--smoke);cursor:default}
+
+.form-note{margin-top:22px;font-size:.82rem;color:var(--smoke);min-height:1.4em}
+.form-note.ok{color:var(--ice)}
+
+.spec-panel{
+  background:var(--graphite);
+  border:1px solid var(--edge);
+  padding:38px 36px;
+}
+.spec-panel dl{
+  display:grid;grid-template-columns:1fr auto;gap:16px 20px;
+  font-size:.88rem;
+}
+.spec-panel dt{color:var(--smoke)}
+.spec-panel dd{
+  text-align:right;color:var(--ice);font-variant-numeric:tabular-nums;
+  font-weight:500;
+}
+.spec-panel hr{border:0;border-top:1px solid var(--edge);margin:28px 0}
+.spec-panel .panel-title{
+  font-size:1.16rem;font-weight:600;letter-spacing:-.01em;margin-bottom:22px;
+}
+.brochure{
+  display:inline-block;margin-top:8px;
+  color:var(--bone);text-decoration:none;
+  border-bottom:1px solid var(--bronze);padding-bottom:3px;
+  font-size:.86rem;transition:color .25s ease;
+}
+.brochure:hover{color:var(--bronze)}
+
+/* ============================================================
+   journal
+   ============================================================ */
+#journal article{
+  padding:44px 0;
+  border-bottom:1px solid var(--edge);
+  display:grid;grid-template-columns:.7fr 2fr;gap:44px;align-items:start;
+}
+#journal article:first-of-type{border-top:1px solid var(--edge);margin-top:60px}
+#journal article h3{
+  font-size:clamp(1.4rem,2.6vw,2rem);font-weight:600;
+  letter-spacing:-.025em;line-height:1.16;max-width:22ch;
+}
+#journal article p{margin-top:16px;color:var(--smoke);max-width:58ch}
+.article-meta{
+  color:var(--ice);font-size:.76rem;letter-spacing:.1em;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ============================================================
+   atelier (lab)
+   ============================================================ */
+.lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;margin-top:60px}
+
+.hover-card{
+  position:relative;padding:34px;
+  background:var(--graphite);border:1px solid var(--edge);
+  cursor:crosshair;
+}
+.hover-trigger{
+  color:var(--bone);font-size:.88rem;letter-spacing:.06em;
+}
+.hover-content{
+  display:none;margin-top:22px;padding-top:22px;
+  border-top:1px solid var(--edge);
+  color:var(--smoke);font-size:.9rem;
+}
+.hover-card:hover .hover-content{display:block}
+
+.secret-box{
+  margin-top:26px;padding:22px 24px;
+  border:1px dashed var(--bronze);
+  color:var(--smoke);font-size:.86rem;letter-spacing:.04em;
+}
+.secret-box b{color:var(--ice);font-weight:500}
+
+.lazy-section{
+  margin-top:26px;padding:26px;
+  background:var(--graphite);border:1px solid var(--edge);
+}
+.lazy-item{
+  display:none;padding:14px 16px;margin-top:10px;
+  border-left:1px solid var(--ice);
+  background:rgba(111,179,217,.05);
+  color:var(--smoke);font-size:.88rem;
+}
+.lazy-item.visible{display:block}
+.btn-load{
+  appearance:none;border:1px solid var(--slate);background:transparent;
+  color:var(--bone);font-family:inherit;font-size:.8rem;letter-spacing:.08em;
+  padding:13px 24px;cursor:pointer;transition:border-color .25s ease,color .25s ease;
+}
+.btn-load:hover{border-color:var(--bronze);color:var(--bronze)}
+.btn-load[disabled]{color:var(--smoke);border-color:var(--slate);cursor:default}
+
+.scroll-container{
+  height:340px;margin-top:26px;overflow-y:auto;
+  padding:24px;border:1px solid var(--edge);
+  background:linear-gradient(180deg,var(--graphite),var(--void));
+}
+.scroll-container p{margin-bottom:30px;color:var(--smoke);font-size:.9rem}
+#scroll-target{
+  margin-top:20px;padding:26px;text-align:center;
+  background:rgba(192,139,78,.09);
+  border:1px solid var(--bronze);
+  color:var(--bone);font-weight:500;letter-spacing:.02em;
+}
+
+/* ============================================================
+   footer
+   ============================================================ */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid var(--edge);
+  margin-top:40px;
+}
+.footer-in{
+  width:var(--rail);margin:0 auto;
+  padding:56px 0 64px;
+  display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;
+  align-items:flex-end;
+}
+footer p{color:var(--smoke);font-size:.8rem;letter-spacing:.04em}
+.footer-mark{
+  font-family:var(--wordmark);font-weight:700;
+  font-size:clamp(2.6rem,9vw,6rem);line-height:.9;
+  letter-spacing:.04em;color:transparent;
+  -webkit-text-stroke:1px rgba(237,238,240,.16);
+}
+
+/* ============================================================
+   responsive
+   ============================================================ */
+@media (max-width:1080px){
+  .split,.form-shell{grid-template-columns:1fr;gap:52px}
+  .lab-grid{grid-template-columns:1fr}
+  #journal article{grid-template-columns:1fr;gap:16px}
+  .product-card{grid-template-columns:1fr;gap:26px}
+  .specs{grid-template-columns:repeat(2,1fr)}
+  .specs div:nth-child(3){border-left:0;padding-left:0}
+  .specs div:nth-child(n+3){border-top:1px solid var(--edge-soft)}
+}
+@media (max-width:860px){
+  :root{--rail:calc(100% - 40px)}
+  .masthead-in{height:auto;flex-direction:column;align-items:flex-start;gap:0;padding-bottom:6px}
+  nav.tabs{width:100%;overflow-x:auto;scrollbar-width:none;min-width:0}
+  nav.tabs ul{gap:26px}
+  nav.tabs a{padding:18px 0 16px;white-space:nowrap}
+  .head-cta{display:none}
+  .section-in{padding:78px 0}
+  .hero{padding-top:44px}
+  .specs{grid-template-columns:1fr}
+  .specs div{border-left:0;padding-left:0;border-top:1px solid var(--edge-soft)}
+  .specs div:first-child{border-top:0}
+  .testimonial{margin-top:60px;padding-left:22px}
+  .stage{min-height:200px}
+}
+
+/* ============================================================
+   reduced motion
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;
+    transition-duration:.01ms !important}
+  .sweep{display:none}
+  .page-section.active{display:block;animation:none}
+}
+</style>
 </head>
 <body>
 
-    <header>
-        <div class="container">
-            <h1>Scraper Demo Store</h1>
-            <p>A sample website for testing your web scraper — click, extract, fill, hover, scroll, and more!</p>
-        </div>
-    </header>
+<div class="datum" aria-hidden="true"></div>
 
-    <nav class="tabs">
-        <ul>
-            <li><a href="#home" class="tab-link active" data-target="home">Home</a></li>
-            <li><a href="#products" class="tab-link" data-target="products">Products</a></li>
-            <li><a href="#about" class="tab-link" data-target="about">About</a></li>
-            <li><a href="#contact" class="tab-link" data-target="contact">Contact</a></li>
-            <li><a href="#blog" class="tab-link" data-target="blog">Blog</a></li>
-            <li><a href="#lab" class="tab-link" data-target="lab">Lab</a></li>
-        </ul>
+<header class="masthead">
+  <div class="masthead-in">
+    <a class="wordmark" href="#home">SÖLVAR<sup>MMXXVI</sup></a>
+    <nav class="tabs" aria-label="Sections">
+      <ul>
+        <li><a href="#home"     class="tab-link active" data-target="home">Home</a></li>
+        <li><a href="#models"   class="tab-link" data-target="models">Models</a></li>
+        <li><a href="#craft"    class="tab-link" data-target="craft">Craft</a></li>
+        <li><a href="#commission" class="tab-link" data-target="commission">Commission</a></li>
+        <li><a href="#journal"  class="tab-link" data-target="journal">Journal</a></li>
+        <li><a href="#atelier"  class="tab-link" data-target="atelier">Atelier</a></li>
+      </ul>
     </nav>
+    <a class="head-cta" href="#commission">Commission a car</a>
+  </div>
+</header>
 
-    <div class="container">
+<main>
 
-        <!-- ========== HOME SECTION ========== -->
-        <section id="home" class="page-section active">
-            <h2>Welcome to Scraper Demo Store</h2>
-            <p>This is a <strong>demo website</strong> built specifically for testing your web scraper script. It contains various elements you can interact with: clickable tabs, product listings, forms, hover effects, lazy-loaded content, and more.</p>
-            <p>Try extracting the features listed below, or click on any navigation link above!</p>
-
-            <h3>Our Key Features</h3>
-            <ul class="feature-list">
-                <li>Fast worldwide shipping</li>
-                <li>24/7 customer support</li>
-                <li>30-day money-back guarantee</li>
-                <li>Secure payment processing</li>
-                <li>Free returns within 15 days</li>
-            </ul>
-
-            <h3>What Our Customers Say</h3>
-            <div class="testimonial">
-                <p>"Amazing products and incredibly fast delivery. Highly recommended!"</p>
-                <p class="author">— Sarah Johnson</p>
-            </div>
-            <div class="testimonial">
-                <p>"The quality exceeded my expectations. I'll definitely be ordering again."</p>
-                <p class="author">— Michael Chen</p>
-            </div>
-            <div class="testimonial">
-                <p>"Customer support was outstanding. They helped me with everything I needed."</p>
-                <p class="author">— Priya Sharma</p>
-            </div>
-        </section>
-
-        <!-- ========== PRODUCTS SECTION ========== -->
-        <section id="products" class="page-section">
-            <h2>Our Products</h2>
-            <p>Browse our collection of premium products. Each card contains a name, price, and description.</p>
-
-            <div class="product-grid">
-                <div class="product-card">
-                    <h3>Wireless Headphones</h3>
-                    <div class="price">$79.99</div>
-                    <div class="description">Premium noise-cancelling wireless headphones with 30-hour battery life.</div>
-                </div>
-                <div class="product-card">
-                    <h3>Smart Watch</h3>
-                    <div class="price">$199.99</div>
-                    <div class="description">Fitness tracking smart watch with heart rate monitor and GPS.</div>
-                </div>
-                <div class="product-card">
-                    <h3>Bluetooth Speaker</h3>
-                    <div class="price">$49.99</div>
-                    <div class="description">Portable waterproof speaker with deep bass and 12-hour playback.</div>
-                </div>
-                <div class="product-card">
-                    <h3>Laptop Stand</h3>
-                    <div class="price">$34.99</div>
-                    <div class="description">Ergonomic aluminum laptop stand with adjustable height and angle.</div>
-                </div>
-                <div class="product-card">
-                    <h3>USB-C Hub</h3>
-                    <div class="price">$42.99</div>
-                    <div class="description">7-in-1 USB-C hub with HDMI, USB 3.0, SD card reader, and more.</div>
-                </div>
-                <div class="product-card">
-                    <h3>Mechanical Keyboard</h3>
-                    <div class="price">$89.99</div>
-                    <div class="description">RGB mechanical keyboard with Cherry MX Blue switches and aluminum frame.</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ========== ABOUT SECTION ========== -->
-        <section id="about" class="page-section">
-            <h2>About Us</h2>
-            <p>We are a passionate team of developers and designers dedicated to providing high-quality products at affordable prices. Founded in 2020, our mission is to make technology accessible to everyone.</p>
-
-            <h3>Our Team</h3>
-            <ul class="feature-list">
-                <li><strong>Alice</strong> — CEO & Co-Founder</li>
-                <li><strong>Bob</strong> — CTO & Co-Founder</li>
-                <li><strong>Charlie</strong> — Lead Designer</li>
-                <li><strong>Diana</strong> — Marketing Head</li>
-                <li><strong>Eve</strong> — Customer Support Lead</li>
-            </ul>
-
-            <p>We are committed to delivering excellence in every product we sell. Your satisfaction is our top priority.</p>
-        </section>
-
-        <!-- ========== CONTACT SECTION ========== -->
-        <section id="contact" class="page-section">
-            <h2>Contact Us</h2>
-            <p>Have a question? Fill out the form below and we'll get back to you within 24 hours.</p>
-
-            <div class="contact-form">
-                <div class="form-group">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" name="name" placeholder="John Doe" />
-                </div>
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" placeholder="john@example.com" />
-                </div>
-                <div class="form-group">
-                    <label for="subject">Subject</label>
-                    <select id="subject" name="subject">
-                        <option value="">Select a subject</option>
-                        <option value="support">Customer Support</option>
-                        <option value="sales">Sales Inquiry</option>
-                        <option value="feedback">Feedback</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="message">Message</label>
-                    <textarea id="message" name="message" placeholder="Write your message here..."></textarea>
-                </div>
-                <button type="button" class="btn-submit" id="submitBtn">Send Message</button>
-            </div>
-        </section>
-
-        <!-- ========== BLOG SECTION ========== -->
-        <section id="blog" class="page-section">
-            <h2>Latest Blog Posts</h2>
-            <p>Read our latest articles about technology, product reviews, and industry insights.</p>
-
-            <article class="testimonial">
-                <h3>Top 10 Gadgets of 2025</h3>
-                <div class="article-meta">By Alex — Published on Jan 15, 2025</div>
-                <p>Discover the most innovative gadgets that are shaping the future of technology...</p>
-            </article>
-
-            <article class="testimonial">
-                <h3>How to Choose the Perfect Headphones</h3>
-                <div class="article-meta">By Jordan — Published on Dec 28, 2024</div>
-                <p>From wired to wireless, over-ear to in-ear — here's everything you need to know...</p>
-            </article>
-        </section>
-
-        <!-- ========== LAB SECTION (Scraper Testing Playground) ========== -->
-        <section id="lab" class="page-section">
-            <h2>Scraper Testing Lab</h2>
-            <p>This section contains interactive elements specifically designed to test every action in your scraper.</p>
-
-            <!-- HOVER DEMO -->
-            <h3>Hover Reveal</h3>
-            <p>Hover over the button below to reveal hidden content. Test the <code>hover</code> action then <code>extract</code> the revealed text.</p>
-            <div class="hover-card">
-                <div class="hover-trigger">Hover over me!</div>
-                <div class="hover-content">🎉 You found the hidden content! This text appears when you hover.</div>
-            </div>
-
-            <!-- SELECT DEMO (already included in contact form above) -->
-            <h3>Select Dropdown</h3>
-            <p>A standalone dropdown for testing the <code>select</code> action. The Contact form above also has one.</p>
-            <div class="form-group">
-                <label for="lab-subject">Choose an option:</label>
-                <select id="lab-subject" name="lab-subject" style="max-width:300px;">
-                    <option value="">-- Select --</option>
-                    <option value="option-a">Option A</option>
-                    <option value="option-b">Option B</option>
-                    <option value="option-c">Option C</option>
-                    <option value="option-d">Option D</option>
-                </select>
-            </div>
-
-            <!-- LAZY LOAD / WAIT DEMO -->
-            <h3>Lazy Load (Wait)</h3>
-            <p>Click the button below to load content after a 2-second delay. Test <code>click</code> then <code>wait</code> for the new content to appear, then <code>extract</code> it.</p>
-            <div class="lazy-section">
-                <button class="btn-load" id="loadMoreBtn">Load More Content</button>
-                <div id="lazyContainer">
-                    <div class="lazy-item" id="lazy-item-1">🔄 Click the button to load this...</div>
-                </div>
-            </div>
-
-            <!-- EVALUATE / JS DEMO -->
-            <h3>JavaScript Evaluation</h3>
-            <p>Test the <code>evaluate</code> action by reading the <code>data-secret</code> attribute from the element below.</p>
-            <div class="secret-box" id="secret-data" data-secret="42">Hover in inspector to see data-secret attribute</div>
-
-            <!-- SCROLL DEMO -->
-            <h3>Scroll to Element</h3>
-            <p>Test <code>scroll</code> action by scrolling to the target box below. The scroll container is 800px tall.</p>
-            <div class="scroll-container" id="scrollContainer">
-                <p>Scroll down to find the target element...</p>
-                <p>Keep going...</p>
-                <p>Almost there...</p>
-                <p>Just a little more...</p>
-                <div id="scroll-target">🎯 You reached the scroll target!</div>
-            </div>
-
-            <!-- SCREENSHOT DEMO -->
-            <h3>Screenshot Area</h3>
-            <p>This entire Lab section is a great candidate for a <code>screenshot</code> test. Try taking a full-page screenshot after interacting with elements.</p>
-            <div class="code-block">
-                # Example YAML for screenshot
-                - screenshot:
-                    path: output/lab_section.png
-                    full_page: true
-            </div>
-        </section>
-
+  <!-- ==================================================== HOME -->
+  <section id="home" class="page-section active">
+    <div class="hero">
+      <div class="hero-top">
+        <h1 class="hero-title">
+          Ström
+          <span class="thin">A hypercar built around one decision: that a chassis can be lighter than the law allows.</span>
+        </h1>
+        <div class="hero-aside">
+          Four hundred and twelve kilograms of structure, a 9,000 rpm
+          V12, and a wind tunnel bill longer than most cars.
+          <span class="build">Build slot 07 / 40 reserved</span>
+        </div>
+      </div>
     </div>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Scraper Demo Store. Built for testing purposes.</p>
+    <div class="stage">
+      <div class="stage-glow" aria-hidden="true"></div>
+      <svg viewBox="0 0 1200 400" role="img" aria-label="Side profile of the Sölvar Ström hypercar">
+        <defs>
+          <linearGradient id="paint" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#59616C"/>
+            <stop offset="26%"  stop-color="#3A4049"/>
+            <stop offset="52%"  stop-color="#22262C"/>
+            <stop offset="78%"  stop-color="#15181C"/>
+            <stop offset="100%" stop-color="#0F1114"/>
+          </linearGradient>
+          <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"   stop-color="#2E343C"/>
+            <stop offset="100%" stop-color="#0C0E11"/>
+          </linearGradient>
+          <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"   stop-color="#7C848F"/>
+            <stop offset="55%"  stop-color="#2E333A"/>
+            <stop offset="100%" stop-color="#9AA1AC"/>
+          </linearGradient>
+          <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stop-color="#fff" stop-opacity="0"/>
+            <stop offset="48%"  stop-color="#fff" stop-opacity=".22"/>
+            <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <radialGradient id="tyre" cx=".5" cy=".5" r=".5">
+            <stop offset="0%"   stop-color="#1A1D21"/>
+            <stop offset="70%"  stop-color="#0E1013"/>
+            <stop offset="100%" stop-color="#07080A"/>
+          </radialGradient>
+        </defs>
+
+        <!-- rear wing -->
+        <path d="M946 214 L1074 190 L1078 202 L950 226 Z" fill="#1B1E23"/>
+        <path d="M1042 204 L1040 232" stroke="#2A2E35" stroke-width="5" stroke-linecap="round"/>
+
+        <!-- wheels sit behind the bodywork so the arches read as fenders -->
+        <circle cx="300" cy="300" r="86" fill="url(#tyre)"/>
+        <circle cx="300" cy="300" r="44" fill="url(#rim)"/>
+        <circle cx="300" cy="300" r="11" fill="#0C0E11"/>
+        <circle cx="910" cy="300" r="90" fill="url(#tyre)"/>
+        <circle cx="910" cy="300" r="46" fill="url(#rim)"/>
+        <circle cx="910" cy="300" r="12" fill="#0C0E11"/>
+
+        <!-- body -->
+        <path d="M70 268
+                 C100 236 150 224 215 220
+                 L400 204
+                 C442 166 490 148 556 142
+                 C630 136 700 150 752 186
+                 L1000 214
+                 C1058 220 1100 242 1118 272
+                 L1118 282 L70 282 Z"
+              fill="url(#paint)"/>
+
+        <!-- horizontal body crease -->
+        <path d="M120 252 L1110 252" stroke="url(#sheen)" stroke-width="1.5" fill="none"/>
+
+        <!-- canopy -->
+        <path d="M452 192 C486 164 524 148 570 142
+                 C626 136 684 150 728 180
+                 C640 176 540 180 452 192 Z"
+              fill="url(#glass)"/>
+
+        <!-- side intake -->
+        <path d="M770 196 L860 204 L856 244 L766 240 Z" fill="#0B0D10"/>
+        <path d="M780 206 L852 212" stroke="#2A2E35" stroke-width="2"/>
+
+        <!-- front lamp -->
+        <path d="M78 246 L128 240 L126 248 L76 254 Z" fill="#CFE3EF" opacity=".75"/>
+        <!-- rear lamp -->
+        <path d="M1042 242 L1112 252 L1110 262 L1040 252 Z" fill="#B4453C" opacity=".8"/>
+
+        <!-- splitter -->
+        <path d="M70 278 L300 278 L296 286 L70 286 Z" fill="#0A0C0E"/>
+      </svg>
+      <div class="pool" aria-hidden="true"></div>
+      <div class="sweep" aria-hidden="true"></div>
+    </div>
+
+    <dl class="specs">
+      <div><dt>Power</dt><dd>1,340 hp</dd></div>
+      <div><dt>0–100 km/h</dt><dd>2.1 s</dd></div>
+      <div><dt>Dry weight</dt><dd>1,180 kg</dd></div>
+      <div><dt>V<sub style="font-size:.6em">max</sub></dt><dd>490 km/h</dd></div>
+    </dl>
+
+    <div class="section-in">
+      <div class="testimonial">
+        <p>Nothing else on sale feels like it was designed by people who had to be talked out of every addition.</p>
+        <p class="author">K. Almeida — automotive correspondent</p>
+      </div>
+
+      <div class="split">
+        <div>
+          <h2 class="section-head">What the <em>Ström</em> is made of</h2>
+          <p class="section-lede">
+            Fourteen years of tooling, one wind tunnel, and a refusal to carry
+            anything that does not earn its mass.
+          </p>
         </div>
-    </footer>
+        <ul class="feature-list">
+          <li><strong>Dry-sumped V12</strong> <span>— 9,000 rpm, individually finished</span></li>
+          <li><strong>T700 carbon tub</strong> <span>— cured in a single 14-hour cycle</span></li>
+          <li><strong>Active aero</strong> <span>— 1,100 kg of downforce, no wing delete</span></li>
+          <li><strong>Weight above the axles</strong> <span>— 53%, within a millimetre of the brief</span></li>
+          <li><strong>Hand-built</strong> <span>— 412 hours per chassis</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-    <script>
-        document.querySelectorAll('.tab-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
+  <!-- =================================================== MODELS -->
+  <section id="models" class="page-section">
+    <div class="section-in">
+      <h2 class="section-head">Four cars. <em>One set of rules.</em></h2>
+      <p class="section-lede">
+        Each model is a different answer to the same question. None of them
+        shares a body panel with any other.
+      </p>
 
-                document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
-                document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+      <div class="lineup">
 
-                this.classList.add('active');
+        <article class="product-card">
+          <div class="car-art" style="--paint:#3E444E">
+            <svg viewBox="0 0 1200 400" role="img" aria-label="Ström">
+              <circle class="wheel" cx="300" cy="300" r="84"/><circle class="hub" cx="300" cy="300" r="38"/>
+              <circle class="wheel" cx="910" cy="300" r="88"/><circle class="hub" cx="910" cy="300" r="40"/>
+              <path d="M70 292 C100 258 150 246 215 242 L400 226
+                       C442 186 490 166 556 160 C630 154 700 168 752 204
+                       L1000 232 C1058 238 1100 260 1118 292 L1118 300 L70 300 Z"
+                    fill="var(--paint)"/>
+            </svg>
+          </div>
+          <div class="product-body">
+            <h3>Ström</h3>
+            <div class="price">From €3,400,000</div>
+            <p class="description">
+              The flagship. A mid-engine hypercar with the thinnest possible
+              skin over a full carbon structure, built to be driven hard and
+              kept for thirty years.
+            </p>
+            <div class="spec-inline">
+              <span><b>1,340 hp</b>Power</span>
+              <span><b>2.1 s</b>0–100</span>
+              <span><b>1,180 kg</b>Dry</span>
+            </div>
+          </div>
+        </article>
 
-                const target = this.getAttribute('data-target');
-                document.getElementById(target).classList.add('active');
-            });
-        });
+        <article class="product-card">
+          <div class="car-art" style="--paint:#4A515B">
+            <svg viewBox="0 0 1200 400" role="img" aria-label="Kern">
+              <circle class="wheel" cx="300" cy="300" r="86"/><circle class="hub" cx="300" cy="300" r="38"/>
+              <circle class="wheel" cx="912" cy="300" r="90"/><circle class="hub" cx="912" cy="300" r="40"/>
+              <path d="M70 268 C100 236 150 224 215 220 L400 208
+                       C436 186 480 172 540 168 C612 164 686 178 740 206
+                       L1000 218 C1058 224 1100 244 1118 272 L1118 282 L70 282 Z"
+                    fill="var(--paint)"/>
+            </svg>
+          </div>
+          <div class="product-body">
+            <h3>Kern</h3>
+            <div class="price">From €1,850,000</div>
+            <p class="description">
+              A circuit car with a roof optional. Stripped of sound deadening,
+              carpet and door cards until only the driveline and the driver
+              remain.
+            </p>
+            <div class="spec-inline">
+              <span><b>1,505 hp</b>Power</span>
+              <span><b>945 kg</b>Dry</span>
+              <span><b>7:04</b>Lurgin</span>
+            </div>
+          </div>
+        </article>
 
-        document.getElementById('submitBtn')?.addEventListener('click', function() {
-            alert('Form submitted! (This is a demo — no data is actually sent.)');
-        });
+        <article class="product-card">
+          <div class="car-art" style="--paint:#39404A">
+            <svg viewBox="0 0 1200 400" role="img" aria-label="Halo">
+              <circle class="wheel" cx="296" cy="300" r="84"/><circle class="hub" cx="296" cy="300" r="38"/>
+              <circle class="wheel" cx="902" cy="300" r="86"/><circle class="hub" cx="902" cy="300" r="38"/>
+              <path d="M64 266 C94 234 144 222 210 218 L396 200
+                       C438 160 488 140 556 134 C632 128 704 144 758 182
+                       L1006 212 C1064 218 1106 240 1122 270 L1122 282 L64 282 Z"
+                    fill="var(--paint)"/>
+            </svg>
+          </div>
+          <div class="product-body">
+            <h3>Halo</h3>
+            <div class="price">From €1,240,000</div>
+            <p class="description">
+              The long-distance car. Four seats, a 900 litre boot, and a
+              chassis tuned for comfort at 200 km/h rather than for a lap time.
+            </p>
+            <div class="spec-inline">
+              <span><b>1,010 hp</b>Power</span>
+              <span><b>2.9 s</b>0–100</span>
+              <span><b>1,610 kg</b>Dry</span>
+            </div>
+          </div>
+        </article>
 
-        document.getElementById('loadMoreBtn')?.addEventListener('click', function() {
-            const container = document.getElementById('lazyContainer');
-            const items = [
-                '📦 Lazy-loaded item 1 — loaded on click!',
-                '📦 Lazy-loaded item 2 — also dynamically loaded!',
-                '📦 Lazy-loaded item 3 — last one!'
-            ];
+        <article class="product-card">
+          <div class="car-art" style="--paint:#565E69">
+            <svg viewBox="0 0 1200 400" role="img" aria-label="Nimbus">
+              <circle class="wheel" cx="300" cy="300" r="82"/><circle class="hub" cx="300" cy="300" r="36"/>
+              <circle class="wheel" cx="898" cy="300" r="84"/><circle class="hub" cx="898" cy="300" r="36"/>
+              <path d="M66 270 C96 238 146 226 212 222 L398 208
+                       C440 172 488 154 552 148 C624 142 692 156 746 190
+                       L1002 216 C1060 222 1102 244 1120 272 L1120 282 L66 282 Z"
+                    fill="var(--paint)"/>
+            </svg>
+          </div>
+          <div class="product-body">
+            <h3>Nimbus</h3>
+            <div class="price">From €890,000</div>
+            <p class="description">
+              The entry point, and the lightest car the company has ever sold.
+              No carpet, no sound deadening, no apologies.
+            </p>
+            <div class="spec-inline">
+              <span><b>820 hp</b>Power</span>
+              <span><b>780 kg</b>Dry</span>
+              <span><b>3.4 s</b>0–100</span>
+            </div>
+          </div>
+        </article>
 
-            this.disabled = true;
-            this.textContent = '✅ Loaded!';
-            this.style.background = '#95a5a6';
+      </div>
+    </div>
+  </section>
 
-            items.forEach((text, i) => {
-                const div = document.createElement('div');
-                div.className = 'lazy-item';
-                div.id = 'lazy-item-' + (i + 2);
-                div.textContent = text;
-                container.appendChild(div);
-                div.classList.add('visible');
-            });
-        });
-    </script>
+  <!-- ==================================================== CRAFT -->
+  <section id="craft" class="page-section">
+    <div class="section-in">
+      <h2 class="section-head">Thirty-one people, <em>one building.</em></h2>
+      <p class="section-lede">
+        Sölvar has never grown past the size where everyone knows what everyone
+        else is doing. The company is deliberately small and has been for
+        fourteen years.
+      </p>
+
+      <div class="split">
+        <div>
+          <ul class="feature-list">
+            <li><strong>T700 carbon tub</strong> <span>— one 14-hour cure, no joins</span></li>
+            <li><strong>Hand-formed bodywork</strong> <span>— 412 hours per chassis</span></li>
+            <li><strong>Finished in-house</strong> <span>— 31 layers, 9 days</span></li>
+          </ul>
+        </div>
+        <div>
+          <ul class="feature-list">
+            <li><strong>Ingrid Sand</strong> <span>— Chief Engineer, structure</span></li>
+            <li><strong>Teo Marchetti</strong> <span>— Head of Powertrain</span></li>
+            <li><strong>Aya Nakamura</strong> <span>— Lead Aerodynamicist</span></li>
+            <li><strong>Ruben Okafor</strong> <span>— Chassis &amp; dynamics</span></li>
+            <li><strong>Elif Demir</strong> <span>— Assembly</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================== COMMISSION -->
+  <section id="commission" class="page-section">
+    <div class="section-in">
+      <h2 class="section-head">Commission <em>a car.</em></h2>
+      <p class="section-lede">
+        Forty build slots remain for the 2027 model year. Tell us what you want
+        and we will tell you honestly whether we can build it.
+      </p>
+
+      <div class="form-shell">
+        <form class="contact-form" id="commissionForm" novalidate>
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Your name" />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" />
+          </div>
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <select id="subject" name="subject">
+              <option value="">Choose one</option>
+              <option value="support">Ownership &amp; support</option>
+              <option value="sales">New commission</option>
+              <option value="press">Press</option>
+              <option value="other">Something else</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">What would you like to build?</label>
+            <textarea id="message" name="message" placeholder="Model, paint, anything specific..."></textarea>
+          </div>
+
+          <div class="check-row">
+            <input type="checkbox" id="nda" name="nda" />
+            <label for="nda">Send the mutual non-disclosure agreement first</label>
+          </div>
+
+          <button type="button" class="btn" id="submitBtn">Send enquiry</button>
+          <p class="form-note" id="formNote"></p>
+        </form>
+
+        <aside class="spec-panel">
+          <p class="panel-title">2027 model year</p>
+          <dl>
+            <dt>Build slots remaining</dt><dd>40</dd>
+            <dt>Lead time</dt><dd>19 months</dd>
+            <dt>Deposit</dt><dd>€250,000</dd>
+            <dt>Assembly</dt><dd>Widhby, Sweden</dd>
+          </dl>
+          <hr>
+          <p>Specification sheets for every model, in full:</p>
+          <a class="brochure" id="brochure"
+             href="data:text/plain;charset=utf-8,SOLVAR%202027%20SPECIFICATION%0A%0AStr%C3%B6m%20%C2%B7%201%2C340%20hp%20%C2%B7%201%2C180%20kg%0AKern%20%C2%B7%201%2C505%20hp%20%C2%B7%20945%20kg%0AHalo%20%C2%B7%201%2C010%20hp%20%C2%B7%201%2C610%20kg%0ANimbus%20%C2%B7%20820%20hp%20%C2%B7%20780%20kg"
+             download="solvar-spec-2027.txt">Download the 2027 specification</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================== JOURNAL -->
+  <section id="journal" class="page-section">
+    <div class="section-in">
+      <h2 class="section-head">Journal</h2>
+      <p class="section-lede">
+        Notes from the factory floor and the wind tunnel. Published when there
+        is something to say.
+      </p>
+
+      <article>
+        <div class="article-meta">Feb 2026</div>
+        <div>
+          <h3>The fourteen-hour cure, and why we stopped trying to shorten it</h3>
+          <p>
+            A single T700 tub used to take three days and a nervous production
+            team. The current process takes fourteen hours and produces a
+            stiffer, lighter part, and we only worked that out by accident.
+          </p>
+        </div>
+      </article>
+
+      <article>
+        <div class="article-meta">Nov 2025</div>
+        <div>
+          <h3>1,100 kg of downforce, and the argument about the wing</h3>
+          <p>
+            Our aero team wanted the rear wing deleted. Our customers did not.
+            A compromise was found that adds 41 kg and, in our judgement, keeps
+            the car the faster of the two.
+          </p>
+        </div>
+      </article>
+
+      <article>
+        <div class="article-meta">Sep 2025</div>
+        <div>
+          <h3>Why we publish dry weight the way we do</h3>
+          <p>
+            Half the weight figures in this industry are measured with the
+            fuel tank full and a driver in the seat. Ours are not. Here is the
+            exact method, and the reasoning behind it.
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- =================================================== ATELIER -->
+  <section id="atelier" class="page-section">
+    <div class="section-in">
+      <h2 class="section-head">Atelier</h2>
+      <p class="section-lede">
+        The configurator used during commissioning. Each build gets one of
+        these sessions with the same engineer who signed off the chassis.
+      </p>
+
+      <div class="lab-grid">
+        <div>
+          <h3 style="font-size:1.05rem;font-weight:500;letter-spacing:-.01em">Hover for the detail</h3>
+          <div class="hover-card">
+            <p class="hover-trigger">Active rear wing, three positions</p>
+            <p class="hover-content">
+              The wing moves between 0°, 8° and 19° in under 400 ms. Below 60 km/h
+              it stays flat so the car can be reversed in a narrow street without
+              scraping a roof.
+            </p>
+          </div>
+
+          <div class="secret-box" id="secret-data" data-secret="42">
+            Chassis reference, held in the build record: <b>SV-2027-0042</b>
+          </div>
+
+          <div class="form-group" style="margin-top:26px;max-width:320px">
+            <label for="lab-subject">Paint programme</label>
+            <select id="lab-subject" name="lab-subject">
+              <option value="">Choose a programme</option>
+              <option value="option-a">Glacier white</option>
+              <option value="option-b">Midnight teal</option>
+              <option value="option-c">Champagne bronze</option>
+              <option value="option-d">Graphite satin</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="font-size:1.05rem;font-weight:500;letter-spacing:-.01em">Finishes</h3>
+          <div class="lazy-section">
+            <button type="button" class="btn-load" id="loadMoreBtn">Show more finishes</button>
+            <div id="lazyContainer">
+              <div class="lazy-item visible" id="lazy-item-1">Hand-polished clear coat — 31 layers</div>
+            </div>
+          </div>
+
+          <h3 style="font-size:1.05rem;font-weight:500;letter-spacing:-.01em;margin-top:44px">Bespoke list</h3>
+          <div class="scroll-container" id="scrollContainer">
+            <p>Everything on this list is available. Nothing on it is standard.</p>
+            <p>Paint matched to a named fabric, taken from a single dye lot.</p>
+            <p>Exposed carbon weave, lacquered rather than clear-coated.</p>
+            <p>Seat frames in recycled titanium, hand-brushed.</p>
+            <p>A single plaque, engraved with the name of the car's first road.</p>
+            <p>Windscreen tint, chosen from a physical sample book.</p>
+            <div id="scroll-target">Everything below this line is fitted at Widhby</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-in">
+    <div>
+      <p>Widhby, Sweden — by appointment only</p>
+      <p style="margin-top:8px">hello@solvar.example</p>
+    </div>
+    <p class="footer-mark">SÖLVAR</p>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.tab-link').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      go(link.getAttribute('data-target'));
+    });
+  });
+
+  function go(target) {
+    document.querySelectorAll('.tab-link').forEach(function (l) {
+      l.classList.toggle('active', l.getAttribute('data-target') === target);
+    });
+    document.querySelectorAll('.page-section').forEach(function (s) {
+      s.classList.toggle('active', s.id === target);
+    });
+    history.replaceState(null, '', '#' + target);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // deep links: site loads straight into the right section
+  if (location.hash) {
+    var id = location.hash.slice(1);
+    if (document.getElementById(id)) go(id);
+  }
+
+  document.getElementById('loadMoreBtn')?.addEventListener('click', function () {
+    var container = document.getElementById('lazyContainer');
+    var finishes = [
+      'Satin anti-reflective wrap — 4 micron',
+      'Titanium mirror finish, no clear coat',
+      'Interior leather, vegetable tanned, 4 mm',
+      'Steering wheel rim in forged magnesium'
+    ];
+    finishes.forEach(function (text, i) {
+      var div = document.createElement('div');
+      div.className = 'lazy-item';
+      div.id = 'lazy-item-' + (i + 2);
+      div.textContent = text;
+      container.appendChild(div);
+      div.classList.add('visible');
+    });
+    this.disabled = true;
+    this.textContent = 'All four shown';
+  });
+
+  document.getElementById('submitBtn')?.addEventListener('click', function () {
+    var note = document.getElementById('formNote');
+    var name = document.getElementById('name').value.trim();
+
+    if (!name) {
+      note.classList.remove('ok');
+      note.textContent = 'Add a name so we know who to reply to.';
+      return;
+    }
+    note.classList.add('ok');
+    note.textContent = 'Noted. We will reply to ' + name + ' within two working days.';
+  });
+</script>
 
 </body>
 </html>

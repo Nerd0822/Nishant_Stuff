@@ -11,3 +11,5 @@ sounddevice>=0.4.6
 soundfile>=0.12
 kokoro-onnx>=0.6
 faster-whisper>=1.0
+playwright>=1.40.0
+PyYAML>=6.0

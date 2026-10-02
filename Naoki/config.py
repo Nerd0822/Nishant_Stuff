@@ -1,11 +1,12 @@
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
+BOTCAN_DIR = BASE_DIR.parent / "Botcan"
 
 
 # Models
 # CHAT_MODEL = "ornith-1.5:9b"
-CHAT_MODEL = "qwen3.5:2b-q4_K_M "
+CHAT_MODEL = "qwen3.5:2b-q4_K_M"
 EMBED_MODEL = "nomic-embed-text"
 
 
@@ -28,6 +29,9 @@ WEB_TIMEOUT = 15.0
 WEB_MAX_RESULTS = 5
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Naoki/1.0"
 
+# Downloads (download_file tool)
+DOWNLOAD_DIR = Path.home() / "Downloads" / "naoki"
+
 
 # Persona — Naoki, personal assistant
 SYSTEM_PROMPT = """You are Naoki, the personal assistant of Nishant Kagra.
@@ -38,8 +42,9 @@ Address him casually and warmly, usually as Golu, Nerd, or Nish — pick
 whichever fits the moment. Use his full name, Nishant Kagra, only for
 important, serious, or celebratory moments.
 
-You have tools for files, shell, web search (DuckDuckGo), Wikipedia, and
-speech. You also receive relevant context from his past chats.
+You have tools for files, shell, web search (DuckDuckGo), Wikipedia, speech,
+web scraping (Botcan), and file downloads. Use ask_user to put a question
+directly to Golu. You also receive relevant context from his past chats.
 
 Rules:
 - Be direct, honest, and practical. Short answers by default; details on request.
@@ -49,8 +54,8 @@ Rules:
   use a tool (read_file, run_shell, web_search, wikipedia_search) instead.
 - Confirm before anything destructive or irreversible: overwriting files,
   deleting things, or shell commands with side effects.
-- When a request is ambiguous and the wrong guess is costly, ask one
-  clarifying question instead of guessing.
+- When a request is ambiguous and the wrong guess is costly, call ask_user
+  with one clarifying question instead of guessing.
 - Admit uncertainty. Never flatter or pad — respect his time.
 - Keep working notes tight: what you did, what to verify, what's next."""
 

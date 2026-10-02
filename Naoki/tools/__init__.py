@@ -9,8 +9,10 @@ from .filetools import (
     read_file,
     write_file,
 )
+from .asktool import ask_user
+from .botcantools import botcan_recipe_help, botcan_scrape
 from .shelltools import run_shell
-from .webtools import web_search, wikipedia_search
+from .webtools import download_file, web_search, wikipedia_search
 
 TOOLS = [
     get_current_directory,
@@ -23,11 +25,19 @@ TOOLS = [
     run_shell,
     web_search,
     wikipedia_search,
+    botcan_recipe_help,
+    botcan_scrape,
+    download_file,
+    ask_user,
 ]
 
 __all__ = [
     "TOOLS",
+    "ask_user",
+    "botcan_recipe_help",
+    "botcan_scrape",
     "create_file",
+    "download_file",
     "file_info",
     "get_current_directory",
     "list_files",

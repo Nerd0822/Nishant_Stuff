@@ -1,16 +1,16 @@
-open: file:///home/golu/Nishant_stuff/Scraper/demo_site.html
+open: test/demo_site.html
 
 steps:
     # ========== HOME TAB ==========
     # Extract the page heading (single element)
     - extract:
-          selector: header h1
+          selector: h1.hero-title
     - wait:
           timeout: 200
 
     # Extract all feature list items
     - extract:
-          selector: .feature-list li
+          selector: "#home .feature-list li"
           all: True
     - wait:
           timeout: 200
@@ -25,7 +25,7 @@ steps:
     # ========== PRODUCTS TAB ==========
     - click:
           selector: .tab-link
-          text: "Products"
+          text: "Models"
     - wait:
           timeout: 300
 
@@ -46,13 +46,13 @@ steps:
     # ========== ABOUT TAB ==========
     - click:
           selector: .tab-link
-          text: "About"
+          text: "Craft"
     - wait:
           timeout: 300
 
     # Extract team member names
     - extract:
-          selector: "#about .feature-list li"
+          selector: "#craft .feature-list li"
           all: True
     - wait:
           timeout: 200
@@ -60,7 +60,7 @@ steps:
     # ========== CONTACT TAB ==========
     - click:
           selector: .tab-link
-          text: "Contact"
+          text: "Commission"
     - wait:
           timeout: 300
 
@@ -93,13 +93,13 @@ steps:
     # ========== BLOG TAB ==========
     - click:
           selector: .tab-link
-          text: "Blog"
+          text: "Journal"
     - wait:
           timeout: 300
 
     # Extract all blog article headings
     - extract:
-          selector: "#blog article h3"
+          selector: "#journal article h3"
           all: True
     - wait:
           timeout: 200
@@ -107,7 +107,7 @@ steps:
     # ========== LAB TAB ==========
     - click:
           selector: .tab-link
-          text: "Lab"
+          text: "Atelier"
     - wait:
           timeout: 300
 
@@ -158,20 +158,20 @@ steps:
     # ========== SCREENSHOT & SAVE ==========
     # Take a full-page screenshot
     - screenshot:
-          path: Scraper/output/demo_screenshot.png
+          path: output/demo_screenshot.png
           full_page: True
     - wait:
           timeout: 200
 
     # Save all extracted data to JSON
     - save:
-          path: Scraper/output/demo_json_results.json
+          path: output/demo_json_results.json
           format: json
     - wait:
           timeout: 200
 
     - save:
-          path: Scraper/output/demo_csv_results.csv
+          path: output/demo_csv_results.csv
           format: csv
     - wait:
           timeout: 200

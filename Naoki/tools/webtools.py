@@ -1,11 +1,12 @@
 import html as html_lib
 import re
 import urllib.parse
+from pathlib import Path
 
 import httpx
 from langchain_core.tools import tool
 
-from config import USER_AGENT, WEB_MAX_RESULTS, WEB_TIMEOUT
+from config import DOWNLOAD_DIR, USER_AGENT, WEB_MAX_RESULTS, WEB_TIMEOUT
 
 
 def _ddg_unwrap(href: str) -> str:
@@ -111,3 +112,29 @@ def wikipedia_search(query: str) -> str:
     extract = (data.get("extract") or "")[:2000]
     url = ((data.get("content_urls") or {}).get("desktop") or {}).get("page", "")
     return f"{data.get('title', title)}\n{url}\n{extract}".strip()
+
+
+@tool
+def download_file(url: str, filename: str = "") -> str:
+    """Download a file (image, video, or anything else) to ~/Downloads/naoki.
+    Args: url, filename (optional; defaults to the name in the URL).
+    Overwrites a file of the same name. Returns the saved path and size."""
+    DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    raw = filename or urllib.parse.urlparse(url).path
+    # Path(...).name strips any directory component, so "../x" cannot escape the folder.
+    dest = DOWNLOAD_DIR / (Path(raw).name or "download")
+    try:
+        # stream, never .content — a video would otherwise buffer entirely in memory
+        with httpx.stream(
+            "GET",
+            url,
+            follow_redirects=True,
+            timeout=httpx.Timeout(WEB_TIMEOUT, read=60.0),
+        ) as r:
+            r.raise_for_status()
+            with dest.open("wb") as f:
+                for chunk in r.iter_bytes():
+                    f.write(chunk)
+    except (httpx.HTTPError, OSError, ValueError) as e:
+        return f"download error: {type(e).__name__}: {e}"
+    return f"saved {dest} ({dest.stat().st_size} bytes)"
