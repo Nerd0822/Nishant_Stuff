@@ -239,3 +239,5 @@ scikit_learn_tuto/data/
 
 # OpenCode agent skills (installed copies of upstream skills - ~650KB, not source)
 .opencode/
+
+send_email/
