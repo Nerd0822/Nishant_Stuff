@@ -1,5 +1,0 @@
-choose a model between small thinker and qwen
-stream hte thinking also
-improve the voice
-test and debug stt module
-push to github
