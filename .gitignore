@@ -48,4 +48,5 @@ Naoki/models/
 wall_e/models/
 
 # Generated output -- tracked .json/.png siblings live here too
-Botcan/output/*.csv
+Botcan/output/*.csv# VTube Studio auth token (grants local control of VTS)
+Naoki/vts_token.txt

@@ -1,10 +1,11 @@
+import logging
 import orjson
 from functools import lru_cache
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
-from config import EMBED_MODEL, CHAT_LOG, DB_DIR
+from config import EMBED_MODEL, MEMORY_DIR, DB_DIR
 
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 100
@@ -12,17 +13,16 @@ TOP_K = 3
 SCORE_MIN = 0.4
 SKIP_ROLES = {"tool"}
 
+# An empty result on a fresh index is normal, not worth printing every turn.
+logging.getLogger("langchain_core.vectorstores.base").setLevel(logging.ERROR)
+
+
 # load the document first
 def load_doc(file):
     messages = []
     with open(file, encoding="utf-8") as f:
         for line in f:
-            lines = [
-                f"{m['role']}: {m['content']}"
-                for m in ex
-                if m["content"].strip() and m["role"] not in SKIP_ROLES
-            ]
-            if line:
+            if line.strip():
                 messages.append(orjson.loads(line))
 
     exchanges, current = [], []
@@ -65,14 +65,14 @@ def chunk_doc(docs):
 def get_store():
     return Chroma(
         collection_name="chat_memory",
-        embedding_function=OllamaEmbeddings(model=EMBED_MODEL,keep_alive=30),
+        embedding_function=OllamaEmbeddings(model=EMBED_MODEL, keep_alive=30),
         persist_directory=str(DB_DIR),
         collection_metadata={"hnsw:space": "cosine"},
     )
 
 
 # index the vector
-def index(file=CHAT_LOG):
+def index(file=MEMORY_DIR):
     chunks = chunk_doc(load_doc(file))
 
     seen, ids = {}, []
