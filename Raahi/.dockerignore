@@ -1,6 +1,0 @@
-.git
-.env
-Backend/media/
-Backend/db.sqlite3
-**/__pycache__/
-*.pyc

@@ -1,17 +1,15 @@
-django
-drf
-flask
-fastapi
+projects:
+1. Naoki
+2. Raahi
+3. Botcan
+4. Chat_with_page. (need rewrite)
 
-sckikit learn
-pytorch
-langchain
-langgraph
-rag
-mcp
+5. ai companion.(need to implemented)
 
-js
-react
-jwt
-auth
-user creation and registration
+
+Pending:
+1. sckikit learn.
+2. pytorch
+3. nlp
+4. computer vision
+5. rag module.
